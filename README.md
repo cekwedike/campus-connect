@@ -152,8 +152,28 @@ This project is for educational purposes as part of the Advanced DevOps Course.
 
 ## Project Board
 
-[Link to GitHub Project Board](https://github.com/yourusername/campus-connect/projects/1)
+[Link to GitHub Project Board](https://github.com/cekwedike/campus-connect/projects/1)
 
 ## Repository
 
-[GitHub Repository](https://github.com/yourusername/campus-connect) 
+[GitHub Repository](https://github.com/cekwedike/campus-connect)
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration. The pipeline includes:
+
+- **Linting**: Code quality checks with flake8 and black
+- **Testing**: Unit tests with pytest and coverage reporting
+- **Security**: Vulnerability scanning with safety and bandit
+- **Build**: Docker image building for containerization
+
+The pipeline runs on:
+- Every push to `main` and `develop` branches
+- Every pull request to `main` and `develop` branches
+
+## Branch Protection
+
+The `main` branch is protected with the following rules:
+- Requires pull request reviews before merging
+- Requires status checks to pass before merging
+- Requires up-to-date branches before merging 
