@@ -1,0 +1,67 @@
+﻿2025-07-02T19:26:02.6436256Z ##[group]Run actions/checkout@v4
+2025-07-02T19:26:02.6437342Z with:
+2025-07-02T19:26:02.6437675Z   repository: cekwedike/campus-connect
+2025-07-02T19:26:02.6438329Z   token: ***
+2025-07-02T19:26:02.6438623Z   ssh-strict: true
+2025-07-02T19:26:02.6438948Z   ssh-user: git
+2025-07-02T19:26:02.6439343Z   persist-credentials: true
+2025-07-02T19:26:02.6439701Z   clean: true
+2025-07-02T19:26:02.6440004Z   sparse-checkout-cone-mode: true
+2025-07-02T19:26:02.6440372Z   fetch-depth: 1
+2025-07-02T19:26:02.6440622Z   fetch-tags: false
+2025-07-02T19:26:02.6440799Z   show-progress: true
+2025-07-02T19:26:02.6440985Z   lfs: false
+2025-07-02T19:26:02.6441359Z   submodules: false
+2025-07-02T19:26:02.6441552Z   set-safe-directory: true
+2025-07-02T19:26:02.6442328Z ##[endgroup]
+2025-07-02T19:26:02.8083410Z Syncing repository: cekwedike/campus-connect
+2025-07-02T19:26:02.8084853Z ##[group]Getting Git version info
+2025-07-02T19:26:02.8085250Z Working directory is '/home/runner/work/campus-connect/campus-connect'
+2025-07-02T19:26:02.8085849Z [command]/usr/bin/git version
+2025-07-02T19:26:02.8137557Z git version 2.49.0
+2025-07-02T19:26:02.8166111Z ##[endgroup]
+2025-07-02T19:26:02.8186451Z Temporarily overriding HOME='/home/runner/work/_temp/f81f128d-26d9-4f63-b0ed-0b85f05393c4' before making global git config changes
+2025-07-02T19:26:02.8187514Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-02T19:26:02.8191872Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/campus-connect/campus-connect
+2025-07-02T19:26:02.8225197Z Deleting the contents of '/home/runner/work/campus-connect/campus-connect'
+2025-07-02T19:26:02.8228390Z ##[group]Initializing the repository
+2025-07-02T19:26:02.8232865Z [command]/usr/bin/git init /home/runner/work/campus-connect/campus-connect
+2025-07-02T19:26:02.8288906Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-07-02T19:26:02.8289731Z hint: is subject to change. To configure the initial branch name to use in all
+2025-07-02T19:26:02.8290273Z hint: of your new repositories, which will suppress this warning, call:
+2025-07-02T19:26:02.8290780Z hint:
+2025-07-02T19:26:02.8291909Z hint: 	git config --global init.defaultBranch <name>
+2025-07-02T19:26:02.8292457Z hint:
+2025-07-02T19:26:02.8292944Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-07-02T19:26:02.8293847Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-07-02T19:26:02.8294503Z hint:
+2025-07-02T19:26:02.8294826Z hint: 	git branch -m <name>
+2025-07-02T19:26:02.8295571Z Initialized empty Git repository in /home/runner/work/campus-connect/campus-connect/.git/
+2025-07-02T19:26:02.8305581Z [command]/usr/bin/git remote add origin https://github.com/cekwedike/campus-connect
+2025-07-02T19:26:02.8336460Z ##[endgroup]
+2025-07-02T19:26:02.8336951Z ##[group]Disabling automatic garbage collection
+2025-07-02T19:26:02.8340793Z [command]/usr/bin/git config --local gc.auto 0
+2025-07-02T19:26:02.8368304Z ##[endgroup]
+2025-07-02T19:26:02.8368787Z ##[group]Setting up auth
+2025-07-02T19:26:02.8375585Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-02T19:26:02.8404869Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-02T19:26:02.8679086Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-02T19:26:02.8709498Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-02T19:26:02.8931035Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-07-02T19:26:02.8965668Z ##[endgroup]
+2025-07-02T19:26:02.8966318Z ##[group]Fetching the repository
+2025-07-02T19:26:02.8975210Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bb7378321abf3915d96acf2afa21404449d8c633:refs/remotes/origin/main
+2025-07-02T19:26:03.5157942Z From https://github.com/cekwedike/campus-connect
+2025-07-02T19:26:03.5158646Z  * [new ref]         bb7378321abf3915d96acf2afa21404449d8c633 -> origin/main
+2025-07-02T19:26:03.5184718Z ##[endgroup]
+2025-07-02T19:26:03.5185286Z ##[group]Determining the checkout info
+2025-07-02T19:26:03.5187712Z ##[endgroup]
+2025-07-02T19:26:03.5193452Z [command]/usr/bin/git sparse-checkout disable
+2025-07-02T19:26:03.5232415Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-07-02T19:26:03.5258029Z ##[group]Checking out the ref
+2025-07-02T19:26:03.5262015Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-07-02T19:26:03.5325391Z Switched to a new branch 'main'
+2025-07-02T19:26:03.5328328Z branch 'main' set up to track 'origin/main'.
+2025-07-02T19:26:03.5333513Z ##[endgroup]
+2025-07-02T19:26:03.5366897Z [command]/usr/bin/git log -1 --format=%H
+2025-07-02T19:26:03.5388840Z bb7378321abf3915d96acf2afa21404449d8c633

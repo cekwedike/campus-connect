@@ -36,7 +36,9 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{project_id}", response_model=Project)
 def update_project(
-    project_id: int, project_update: ProjectUpdate, db: Session = Depends(get_db)
+    project_id: int,
+    project_update: ProjectUpdate,
+    db: Session = Depends(get_db),
 ):
     """Update a project"""
     project_service = ProjectService(db)

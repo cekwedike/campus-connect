@@ -1,0 +1,862 @@
+﻿2025-07-02T19:26:19.9618329Z ##[group]Run black --check --diff backend/
+2025-07-02T19:26:19.9618897Z [36;1mblack --check --diff backend/[0m
+2025-07-02T19:26:19.9690762Z shell: /usr/bin/bash -e {0}
+2025-07-02T19:26:19.9691006Z env:
+2025-07-02T19:26:19.9691494Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-07-02T19:26:19.9691915Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib/pkgconfig
+2025-07-02T19:26:19.9692308Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-07-02T19:26:19.9692662Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-07-02T19:26:19.9693023Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-07-02T19:26:19.9693364Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib
+2025-07-02T19:26:19.9693650Z ##[endgroup]
+2025-07-02T19:26:20.3375519Z --- /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/api.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3387215Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/api.py
+2025-07-02T19:26:20.3388616Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/api.py	2025-07-02 19:26:20.335851+00:00
+2025-07-02T19:26:20.3412029Z @@ -3,6 +3,6 @@
+2025-07-02T19:26:20.3412739Z  
+2025-07-02T19:26:20.3413526Z  api_router = APIRouter()
+2025-07-02T19:26:20.3414159Z  
+2025-07-02T19:26:20.3418238Z  api_router.include_router(users.router, prefix="/users", tags=["users"])
+2025-07-02T19:26:20.3419159Z  api_router.include_router(projects.router, prefix="/projects", tags=["projects"])
+2025-07-02T19:26:20.3420085Z -api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"]) 
+2025-07-02T19:26:20.3420730Z \ No newline at end of file
+2025-07-02T19:26:20.3421491Z +api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
+2025-07-02T19:26:20.3643771Z --- /home/runner/work/campus-connect/campus-connect/backend/app/core/config.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3645555Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/core/config.py	2025-07-02 19:26:20.363058+00:00
+2025-07-02T19:26:20.3646731Z @@ -1,31 +1,33 @@
+2025-07-02T19:26:20.3647362Z  from typing import List
+2025-07-02T19:26:20.3647829Z  from pydantic import BaseSettings, validator
+2025-07-02T19:26:20.3648282Z +
+2025-07-02T19:26:20.3648526Z  
+2025-07-02T19:26:20.3648813Z  class Settings(BaseSettings):
+2025-07-02T19:26:20.3649217Z      API_V1_STR: str = "/api/v1"
+2025-07-02T19:26:20.3649640Z      PROJECT_NAME: str = "CampusConnect"
+2025-07-02T19:26:20.3650075Z -    
+2025-07-02T19:26:20.3650340Z +
+2025-07-02T19:26:20.3650585Z      # Database
+2025-07-02T19:26:20.3652454Z      DATABASE_URL: str = "***localhost/campusconnect"
+2025-07-02T19:26:20.3652968Z -    
+2025-07-02T19:26:20.3653233Z +
+2025-07-02T19:26:20.3653481Z      # Security
+2025-07-02T19:26:20.3653844Z      SECRET_KEY: str = "your-secret-key-here"
+2025-07-02T19:26:20.3654301Z      ALGORITHM: str = "HS256"
+2025-07-02T19:26:20.3654709Z      ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+2025-07-02T19:26:20.3655127Z -    
+2025-07-02T19:26:20.3655383Z +
+2025-07-02T19:26:20.3655626Z      # CORS
+2025-07-02T19:26:20.3656180Z      BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+2025-07-02T19:26:20.3656823Z -    
+2025-07-02T19:26:20.3657074Z +
+2025-07-02T19:26:20.3657396Z      @validator("BACKEND_CORS_ORIGINS", pre=True)
+2025-07-02T19:26:20.3657900Z      def assemble_cors_origins(cls, v):
+2025-07-02T19:26:20.3658400Z          if isinstance(v, str) and not v.startswith("["):
+2025-07-02T19:26:20.3659419Z              return [i.strip() for i in v.split(",")]
+2025-07-02T19:26:20.3659905Z          elif isinstance(v, (list, str)):
+2025-07-02T19:26:20.3660306Z              return v
+2025-07-02T19:26:20.3660633Z          raise ValueError(v)
+2025-07-02T19:26:20.3660963Z -    
+2025-07-02T19:26:20.3661391Z +
+2025-07-02T19:26:20.3661646Z      class Config:
+2025-07-02T19:26:20.3661974Z          case_sensitive = True
+2025-07-02T19:26:20.3662333Z          env_file = ".env"
+2025-07-02T19:26:20.3662995Z  
+2025-07-02T19:26:20.3663262Z -settings = Settings() 
+2025-07-02T19:26:20.3663609Z \ No newline at end of file
+2025-07-02T19:26:20.3663947Z +
+2025-07-02T19:26:20.3664544Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/core/config.py
+2025-07-02T19:26:20.3665265Z +settings = Settings()
+2025-07-02T19:26:20.3743579Z --- /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/users.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3745174Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/users.py	2025-07-02 19:26:20.372627+00:00
+2025-07-02T19:26:20.3746131Z @@ -5,42 +5,47 @@
+2025-07-02T19:26:20.3746572Z  from app.schemas.user import User, UserCreate, UserUpdate
+2025-07-02T19:26:20.3747167Z  from app.services.user_service import UserService
+2025-07-02T19:26:20.3747606Z  
+2025-07-02T19:26:20.3747869Z  router = APIRouter()
+2025-07-02T19:26:20.3748165Z  
+2025-07-02T19:26:20.3748396Z +
+2025-07-02T19:26:20.3748850Z  @router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)
+2025-07-02T19:26:20.3749598Z  def create_user(user: UserCreate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3750183Z      """Create a new user"""
+2025-07-02T19:26:20.3751940Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/users.py
+2025-07-02T19:26:20.3752787Z      user_service = UserService(db)
+2025-07-02T19:26:20.3753231Z      return user_service.create_user(user)
+2025-07-02T19:26:20.3753680Z  
+2025-07-02T19:26:20.3753944Z +
+2025-07-02T19:26:20.3754258Z  @router.get("/", response_model=List[User])
+2025-07-02T19:26:20.3754894Z  def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3755296Z      """Get all users"""
+2025-07-02T19:26:20.3755602Z      user_service = UserService(db)
+2025-07-02T19:26:20.3756110Z      return user_service.get_users(skip=skip, limit=limit)
+2025-07-02T19:26:20.3756600Z +
+2025-07-02T19:26:20.3756854Z  
+2025-07-02T19:26:20.3757209Z  @router.get("/{user_id}", response_model=User)
+2025-07-02T19:26:20.3757608Z  def get_user(user_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3757901Z      """Get a specific user by ID"""
+2025-07-02T19:26:20.3758228Z      user_service = UserService(db)
+2025-07-02T19:26:20.3758663Z      user = user_service.get_user(user_id)
+2025-07-02T19:26:20.3759096Z      if not user:
+2025-07-02T19:26:20.3759559Z          raise HTTPException(status_code=404, detail="User not found")
+2025-07-02T19:26:20.3760114Z      return user
+2025-07-02T19:26:20.3760394Z  
+2025-07-02T19:26:20.3760628Z +
+2025-07-02T19:26:20.3760950Z  @router.put("/{user_id}", response_model=User)
+2025-07-02T19:26:20.3761854Z  def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3762542Z      """Update a user"""
+2025-07-02T19:26:20.3762881Z      user_service = UserService(db)
+2025-07-02T19:26:20.3763280Z      user = user_service.update_user(user_id, user_update)
+2025-07-02T19:26:20.3763778Z      if not user:
+2025-07-02T19:26:20.3764244Z          raise HTTPException(status_code=404, detail="User not found")
+2025-07-02T19:26:20.3764796Z      return user
+2025-07-02T19:26:20.3765096Z  
+2025-07-02T19:26:20.3765357Z +
+2025-07-02T19:26:20.3765794Z  @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+2025-07-02T19:26:20.3766444Z  def delete_user(user_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3766973Z      """Delete a user"""
+2025-07-02T19:26:20.3767653Z      user_service = UserService(db)
+2025-07-02T19:26:20.3768117Z      success = user_service.delete_user(user_id)
+2025-07-02T19:26:20.3768587Z      if not success:
+2025-07-02T19:26:20.3769070Z -        raise HTTPException(status_code=404, detail="User not found") 
+2025-07-02T19:26:20.3769671Z \ No newline at end of file
+2025-07-02T19:26:20.3770182Z +        raise HTTPException(status_code=404, detail="User not found")
+2025-07-02T19:26:20.3775332Z --- /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/tasks.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3776851Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/tasks.py	2025-07-02 19:26:20.374601+00:00
+2025-07-02T19:26:20.3778444Z @@ -5,48 +5,54 @@
+2025-07-02T19:26:20.3778711Z  from app.schemas.task import Task, TaskCreate, TaskUpdate
+2025-07-02T19:26:20.3779051Z  from app.services.task_service import TaskService
+2025-07-02T19:26:20.3779305Z  
+2025-07-02T19:26:20.3779470Z  router = APIRouter()
+2025-07-02T19:26:20.3779643Z  
+2025-07-02T19:26:20.3779779Z +
+2025-07-02T19:26:20.3780035Z  @router.post("/", response_model=Task, status_code=status.HTTP_201_CREATED)
+2025-07-02T19:26:20.3780446Z  def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3780749Z      """Create a new task"""
+2025-07-02T19:26:20.3780977Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3781526Z      return task_service.create_task(task)
+2025-07-02T19:26:20.3781928Z +
+2025-07-02T19:26:20.3782155Z  
+2025-07-02T19:26:20.3782437Z  @router.get("/", response_model=List[Task])
+2025-07-02T19:26:20.3783046Z  def get_tasks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3783658Z      """Get all tasks"""
+2025-07-02T19:26:20.3784038Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3784558Z      return task_service.get_tasks(skip=skip, limit=limit)
+2025-07-02T19:26:20.3785042Z  
+2025-07-02T19:26:20.3785280Z +
+2025-07-02T19:26:20.3785705Z  @router.get("/project/{project_id}", response_model=List[Task])
+2025-07-02T19:26:20.3786438Z  def get_tasks_by_project(project_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3792225Z      """Get all tasks for a specific project"""
+2025-07-02T19:26:20.3792739Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3793283Z      return task_service.get_tasks_by_project(project_id)
+2025-07-02T19:26:20.3793771Z +
+2025-07-02T19:26:20.3794016Z  
+2025-07-02T19:26:20.3794328Z  @router.get("/{task_id}", response_model=Task)
+2025-07-02T19:26:20.3794904Z  def get_task(task_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3795463Z      """Get a specific task by ID"""
+2025-07-02T19:26:20.3795901Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3796328Z      task = task_service.get_task(task_id)
+2025-07-02T19:26:20.3796719Z      if not task:
+2025-07-02T19:26:20.3797154Z          raise HTTPException(status_code=404, detail="Task not found")
+2025-07-02T19:26:20.3797674Z      return task
+2025-07-02T19:26:20.3797966Z  
+2025-07-02T19:26:20.3798195Z +
+2025-07-02T19:26:20.3798506Z  @router.put("/{task_id}", response_model=Task)
+2025-07-02T19:26:20.3799168Z  def update_task(task_id: int, task_update: TaskUpdate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3799824Z      """Update a task"""
+2025-07-02T19:26:20.3800212Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3800773Z      task = task_service.update_task(task_id, task_update)
+2025-07-02T19:26:20.3801469Z      if not task:
+2025-07-02T19:26:20.3801964Z          raise HTTPException(status_code=404, detail="Task not found")
+2025-07-02T19:26:20.3802521Z      return task
+2025-07-02T19:26:20.3802810Z  
+2025-07-02T19:26:20.3803069Z +
+2025-07-02T19:26:20.3803497Z  @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+2025-07-02T19:26:20.3804198Z  def delete_task(task_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3804744Z      """Delete a task"""
+2025-07-02T19:26:20.3805113Z      task_service = TaskService(db)
+2025-07-02T19:26:20.3805811Z      success = task_service.delete_task(task_id)
+2025-07-02T19:26:20.3806234Z      if not success:
+2025-07-02T19:26:20.3806688Z -        raise HTTPException(status_code=404, detail="Task not found") 
+2025-07-02T19:26:20.3807259Z \ No newline at end of file
+2025-07-02T19:26:20.3807794Z +        raise HTTPException(status_code=404, detail="Task not found")
+2025-07-02T19:26:20.3808874Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/projects.py
+2025-07-02T19:26:20.3810475Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/tasks.py
+2025-07-02T19:26:20.3812311Z --- /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/projects.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3813882Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/api/api_v1/endpoints/projects.py	2025-07-02 19:26:20.373709+00:00
+2025-07-02T19:26:20.3814813Z @@ -5,44 +5,51 @@
+2025-07-02T19:26:20.3815321Z  from app.schemas.project import Project, ProjectCreate, ProjectUpdate
+2025-07-02T19:26:20.3815996Z  from app.services.project_service import ProjectService
+2025-07-02T19:26:20.3816519Z  
+2025-07-02T19:26:20.3816821Z  router = APIRouter()
+2025-07-02T19:26:20.3817146Z  
+2025-07-02T19:26:20.3817406Z +
+2025-07-02T19:26:20.3817888Z  @router.post("/", response_model=Project, status_code=status.HTTP_201_CREATED)
+2025-07-02T19:26:20.3818761Z  def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3819437Z      """Create a new project"""
+2025-07-02T19:26:20.3819875Z      project_service = ProjectService(db)
+2025-07-02T19:26:20.3820363Z      # TODO: Get current user from authentication
+2025-07-02T19:26:20.3820869Z      owner_id = 1  # Temporary hardcoded for now
+2025-07-02T19:26:20.3821661Z      return project_service.create_project(project, owner_id)
+2025-07-02T19:26:20.3822205Z  
+2025-07-02T19:26:20.3822482Z +
+2025-07-02T19:26:20.3822835Z  @router.get("/", response_model=List[Project])
+2025-07-02T19:26:20.3823547Z  def get_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3824186Z      """Get all projects"""
+2025-07-02T19:26:20.3824612Z      project_service = ProjectService(db)
+2025-07-02T19:26:20.3825205Z      return project_service.get_projects(skip=skip, limit=limit)
+2025-07-02T19:26:20.3825743Z +
+2025-07-02T19:26:20.3826005Z  
+2025-07-02T19:26:20.3826369Z  @router.get("/{project_id}", response_model=Project)
+2025-07-02T19:26:20.3827027Z  def get_project(project_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3827618Z      """Get a specific project by ID"""
+2025-07-02T19:26:20.3828085Z      project_service = ProjectService(db)
+2025-07-02T19:26:20.3828606Z      project = project_service.get_project(project_id)
+2025-07-02T19:26:20.3829101Z      if not project:
+2025-07-02T19:26:20.3829600Z          raise HTTPException(status_code=404, detail="Project not found")
+2025-07-02T19:26:20.3830190Z      return project
+2025-07-02T19:26:20.3830489Z  
+2025-07-02T19:26:20.3830738Z +
+2025-07-02T19:26:20.3831086Z  @router.put("/{project_id}", response_model=Project)
+2025-07-02T19:26:20.3832102Z -def update_project(project_id: int, project_update: ProjectUpdate, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3832871Z +def update_project(
+2025-07-02T19:26:20.3834379Z +    project_id: int, project_update: ProjectUpdate, db: Session = Depends(get_db)
+2025-07-02T19:26:20.3835029Z +):
+2025-07-02T19:26:20.3835338Z      """Update a project"""
+2025-07-02T19:26:20.3835751Z      project_service = ProjectService(db)
+2025-07-02T19:26:20.3836366Z      project = project_service.update_project(project_id, project_update)
+2025-07-02T19:26:20.3836972Z      if not project:
+2025-07-02T19:26:20.3837472Z          raise HTTPException(status_code=404, detail="Project not found")
+2025-07-02T19:26:20.3838033Z      return project
+2025-07-02T19:26:20.3838335Z  
+2025-07-02T19:26:20.3838572Z +
+2025-07-02T19:26:20.3839012Z  @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+2025-07-02T19:26:20.3840011Z  def delete_project(project_id: int, db: Session = Depends(get_db)):
+2025-07-02T19:26:20.3840604Z      """Delete a project"""
+2025-07-02T19:26:20.3841003Z      project_service = ProjectService(db)
+2025-07-02T19:26:20.3841717Z      success = project_service.delete_project(project_id)
+2025-07-02T19:26:20.3842216Z      if not success:
+2025-07-02T19:26:20.3842706Z -        raise HTTPException(status_code=404, detail="Project not found") 
+2025-07-02T19:26:20.3843535Z \ No newline at end of file
+2025-07-02T19:26:20.3844050Z +        raise HTTPException(status_code=404, detail="Project not found")
+2025-07-02T19:26:20.3845098Z --- /home/runner/work/campus-connect/campus-connect/backend/app/core/database.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3846509Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/core/database.py	2025-07-02 19:26:20.378500+00:00
+2025-07-02T19:26:20.3847373Z @@ -6,11 +6,12 @@
+2025-07-02T19:26:20.3847765Z  engine = create_engine(settings.DATABASE_URL)
+2025-07-02T19:26:20.3848445Z  SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+2025-07-02T19:26:20.3849060Z  
+2025-07-02T19:26:20.3849337Z  Base = declarative_base()
+2025-07-02T19:26:20.3849673Z  
+2025-07-02T19:26:20.3849905Z +
+2025-07-02T19:26:20.3888605Z  def get_db():
+2025-07-02T19:26:20.3889017Z      db = SessionLocal()
+2025-07-02T19:26:20.3889390Z      try:
+2025-07-02T19:26:20.3889668Z          yield db
+2025-07-02T19:26:20.3889994Z      finally:
+2025-07-02T19:26:20.3890284Z -        db.close() 
+2025-07-02T19:26:20.3890638Z \ No newline at end of file
+2025-07-02T19:26:20.3890999Z +        db.close()
+2025-07-02T19:26:20.3891848Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/core/database.py
+2025-07-02T19:26:20.3897023Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/models/__init__.py
+2025-07-02T19:26:20.3940270Z --- /home/runner/work/campus-connect/campus-connect/backend/app/models/__init__.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.3942119Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/models/__init__.py	2025-07-02 19:26:20.384379+00:00
+2025-07-02T19:26:20.3943930Z @@ -1,3 +1,3 @@
+2025-07-02T19:26:20.3944273Z  from .user import User
+2025-07-02T19:26:20.3944661Z  from .project import Project
+2025-07-02T19:26:20.3945079Z -from .task import Task, TaskStatus 
+2025-07-02T19:26:20.3945523Z \ No newline at end of file
+2025-07-02T19:26:20.3945923Z +from .task import Task, TaskStatus
+2025-07-02T19:26:20.3999944Z --- /home/runner/work/campus-connect/campus-connect/backend/app/main.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.4001696Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/main.py	2025-07-02 19:26:20.398902+00:00
+2025-07-02T19:26:20.4002713Z @@ -5,11 +5,11 @@
+2025-07-02T19:26:20.4003186Z  
+2025-07-02T19:26:20.4003598Z  app = FastAPI(
+2025-07-02T19:26:20.4004109Z      title="CampusConnect API",
+2025-07-02T19:26:20.4004914Z      description="A centralized platform for university student collaboration",
+2025-07-02T19:26:20.4006786Z      version="1.0.0",
+2025-07-02T19:26:20.4007274Z -    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+2025-07-02T19:26:20.4007899Z +    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+2025-07-02T19:26:20.4008405Z  )
+2025-07-02T19:26:20.4008675Z  
+2025-07-02T19:26:20.4008958Z  # Set up CORS
+2025-07-02T19:26:20.4009299Z  app.add_middleware(
+2025-07-02T19:26:20.4009651Z      CORSMiddleware,
+2025-07-02T19:26:20.4010002Z @@ -20,12 +20,14 @@
+2025-07-02T19:26:20.4010300Z  )
+2025-07-02T19:26:20.4010569Z  
+2025-07-02T19:26:20.4010847Z  # Include API router
+2025-07-02T19:26:20.4011522Z  app.include_router(api_router, prefix=settings.API_V1_STR)
+2025-07-02T19:26:20.4012064Z  
+2025-07-02T19:26:20.4012331Z +
+2025-07-02T19:26:20.4012594Z  @app.get("/")
+2025-07-02T19:26:20.4012919Z  async def root():
+2025-07-02T19:26:20.4013332Z      return {"message": "Welcome to CampusConnect API"}
+2025-07-02T19:26:20.4014104Z  
+2025-07-02T19:26:20.4014375Z +
+2025-07-02T19:26:20.4014648Z  @app.get("/health")
+2025-07-02T19:26:20.4015013Z  async def health_check():
+2025-07-02T19:26:20.4015400Z -    return {"status": "healthy"} 
+2025-07-02T19:26:20.4015811Z \ No newline at end of file
+2025-07-02T19:26:20.4016171Z +    return {"status": "healthy"}
+2025-07-02T19:26:20.4025286Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/main.py
+2025-07-02T19:26:20.4037290Z --- /home/runner/work/campus-connect/campus-connect/backend/app/models/project.py	2025-07-02 19:26:03.528671+00:00
+2025-07-02T19:26:20.4040141Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/models/project.py	2025-07-02 19:26:20.402135+00:00
+2025-07-02T19:26:20.4041012Z @@ -1,19 +1,20 @@
+2025-07-02T19:26:20.4041759Z  from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey
+2025-07-02T19:26:20.4042454Z  from sqlalchemy.sql import func
+2025-07-02T19:26:20.4042909Z  from sqlalchemy.orm import relationship
+2025-07-02T19:26:20.4043427Z  from app.core.database import Base
+2025-07-02T19:26:20.4043848Z  
+2025-07-02T19:26:20.4044098Z +
+2025-07-02T19:26:20.4044381Z  class Project(Base):
+2025-07-02T19:26:20.4044745Z      __tablename__ = "projects"
+2025-07-02T19:26:20.4045124Z -    
+2025-07-02T19:26:20.4045392Z +
+2025-07-02T19:26:20.4045747Z      id = Column(Integer, primary_key=True, index=True)
+2025-07-02T19:26:20.4046275Z      title = Column(String, nullable=False)
+2025-07-02T19:26:20.4046748Z      description = Column(Text)
+2025-07-02T19:26:20.4047333Z      owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+2025-07-02T19:26:20.4048112Z      created_at = Column(DateTime(timezone=True), server_default=func.now())
+2025-07-02T19:26:20.4048901Z      updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+2025-07-02T19:26:20.4049468Z -    
+2025-07-02T19:26:20.4049747Z +
+2025-07-02T19:26:20.4050016Z      # Relationships
+2025-07-02T19:26:20.4050487Z      owner = relationship("User", back_populates="projects")
+2025-07-02T19:26:20.4051312Z      tasks = relationship("Task", back_populates="project")
+2025-07-02T19:26:20.4052004Z -    members = relationship("ProjectMember", back_populates="project") 
+2025-07-02T19:26:20.4052551Z \ No newline at end of file
+2025-07-02T19:26:20.4053037Z +    members = relationship("ProjectMember", back_populates="project")
+2025-07-02T19:26:20.4072338Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/models/project.py
+2025-07-02T19:26:20.4137846Z --- /home/runner/work/campus-connect/campus-connect/backend/app/models/user.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4139532Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/models/user.py	2025-07-02 19:26:20.412695+00:00
+2025-07-02T19:26:20.4141772Z @@ -1,15 +1,16 @@
+2025-07-02T19:26:20.4142320Z  from sqlalchemy import Column, Integer, String, DateTime, Boolean
+2025-07-02T19:26:20.4142951Z  from sqlalchemy.sql import func
+2025-07-02T19:26:20.4143412Z  from app.core.database import Base
+2025-07-02T19:26:20.4143834Z  
+2025-07-02T19:26:20.4144101Z +
+2025-07-02T19:26:20.4144366Z  class User(Base):
+2025-07-02T19:26:20.4144714Z      __tablename__ = "users"
+2025-07-02T19:26:20.4145078Z -    
+2025-07-02T19:26:20.4145359Z +
+2025-07-02T19:26:20.4145721Z      id = Column(Integer, primary_key=True, index=True)
+2025-07-02T19:26:20.4146366Z      email = Column(String, unique=True, index=True, nullable=False)
+2025-07-02T19:26:20.4147119Z      username = Column(String, unique=True, index=True, nullable=False)
+2025-07-02T19:26:20.4147770Z      full_name = Column(String, nullable=False)
+2025-07-02T19:26:20.4148319Z      hashed_password = Column(String, nullable=False)
+2025-07-02T19:26:20.4148840Z      is_active = Column(Boolean, default=True)
+2025-07-02T19:26:20.4149488Z      created_at = Column(DateTime(timezone=True), server_default=func.now())
+2025-07-02T19:26:20.4156840Z -    updated_at = Column(DateTime(timezone=True), onupdate=func.now()) 
+2025-07-02T19:26:20.4157534Z \ No newline at end of file
+2025-07-02T19:26:20.4158344Z +    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+2025-07-02T19:26:20.4159271Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/models/user.py
+2025-07-02T19:26:20.4160326Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/models/task.py
+2025-07-02T19:26:20.4161776Z --- /home/runner/work/campus-connect/campus-connect/backend/app/models/task.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4163339Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/models/task.py	2025-07-02 19:26:20.413911+00:00
+2025-07-02T19:26:20.4164197Z @@ -1,28 +1,30 @@
+2025-07-02T19:26:20.4164753Z  from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Enum
+2025-07-02T19:26:20.4165440Z  from sqlalchemy.sql import func
+2025-07-02T19:26:20.4165877Z  from sqlalchemy.orm import relationship
+2025-07-02T19:26:20.4166321Z  import enum
+2025-07-02T19:26:20.4166653Z  from app.core.database import Base
+2025-07-02T19:26:20.4167052Z +
+2025-07-02T19:26:20.4167302Z  
+2025-07-02T19:26:20.4167582Z  class TaskStatus(str, enum.Enum):
+2025-07-02T19:26:20.4167980Z      TODO = "todo"
+2025-07-02T19:26:20.4168310Z      IN_PROGRESS = "in_progress"
+2025-07-02T19:26:20.4168699Z      REVIEW = "review"
+2025-07-02T19:26:20.4169015Z      DONE = "done"
+2025-07-02T19:26:20.4169308Z  
+2025-07-02T19:26:20.4169546Z +
+2025-07-02T19:26:20.4169810Z  class Task(Base):
+2025-07-02T19:26:20.4170130Z      __tablename__ = "tasks"
+2025-07-02T19:26:20.4170488Z -    
+2025-07-02T19:26:20.4170748Z +
+2025-07-02T19:26:20.4171081Z      id = Column(Integer, primary_key=True, index=True)
+2025-07-02T19:26:20.4171779Z      title = Column(String, nullable=False)
+2025-07-02T19:26:20.4172213Z      description = Column(Text)
+2025-07-02T19:26:20.4172702Z      status = Column(Enum(TaskStatus), default=TaskStatus.TODO)
+2025-07-02T19:26:20.4173410Z      project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+2025-07-02T19:26:20.4174118Z      assigned_to = Column(Integer, ForeignKey("users.id"))
+2025-07-02T19:26:20.4174674Z      due_date = Column(DateTime(timezone=True))
+2025-07-02T19:26:20.4175300Z      created_at = Column(DateTime(timezone=True), server_default=func.now())
+2025-07-02T19:26:20.4176051Z      updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+2025-07-02T19:26:20.4176590Z -    
+2025-07-02T19:26:20.4176857Z +
+2025-07-02T19:26:20.4177119Z      # Relationships
+2025-07-02T19:26:20.4177577Z      project = relationship("Project", back_populates="tasks")
+2025-07-02T19:26:20.4178129Z -    assignee = relationship("User") 
+2025-07-02T19:26:20.4178551Z \ No newline at end of file
+2025-07-02T19:26:20.4178925Z +    assignee = relationship("User")
+2025-07-02T19:26:20.4189665Z --- /home/runner/work/campus-connect/campus-connect/backend/app/schemas/project.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4193773Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/schemas/project.py	2025-07-02 19:26:20.417484+00:00
+2025-07-02T19:26:20.4204838Z @@ -1,23 +1,27 @@
+2025-07-02T19:26:20.4205228Z  from pydantic import BaseModel
+2025-07-02T19:26:20.4205655Z  from typing import Optional
+2025-07-02T19:26:20.4206068Z  from datetime import datetime
+2025-07-02T19:26:20.4206436Z +
+2025-07-02T19:26:20.4206697Z  
+2025-07-02T19:26:20.4206985Z  class ProjectBase(BaseModel):
+2025-07-02T19:26:20.4207416Z      title: str
+2025-07-02T19:26:20.4208496Z      description: Optional[str] = None
+2025-07-02T19:26:20.4212424Z  
+2025-07-02T19:26:20.4212961Z +
+2025-07-02T19:26:20.4213410Z  class ProjectCreate(ProjectBase):
+2025-07-02T19:26:20.4215026Z      pass
+2025-07-02T19:26:20.4215419Z +
+2025-07-02T19:26:20.4215758Z  
+2025-07-02T19:26:20.4217351Z  class ProjectUpdate(BaseModel):
+2025-07-02T19:26:20.4217784Z      title: Optional[str] = None
+2025-07-02T19:26:20.4218217Z      description: Optional[str] = None
+2025-07-02T19:26:20.4218621Z +
+2025-07-02T19:26:20.4218872Z  
+2025-07-02T19:26:20.4219159Z  class Project(ProjectBase):
+2025-07-02T19:26:20.4219829Z      id: int
+2025-07-02T19:26:20.4220122Z      owner_id: int
+2025-07-02T19:26:20.4220436Z      created_at: datetime
+2025-07-02T19:26:20.4220821Z      updated_at: Optional[datetime] = None
+2025-07-02T19:26:20.4221445Z -    
+2025-07-02T19:26:20.4221723Z +
+2025-07-02T19:26:20.4221974Z      class Config:
+2025-07-02T19:26:20.4222313Z -        from_attributes = True 
+2025-07-02T19:26:20.4222706Z \ No newline at end of file
+2025-07-02T19:26:20.4223081Z +        from_attributes = True
+2025-07-02T19:26:20.4224048Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/schemas/project.py
+2025-07-02T19:26:20.4306760Z --- /home/runner/work/campus-connect/campus-connect/backend/app/schemas/task.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4312001Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/schemas/task.py	2025-07-02 19:26:20.429576+00:00
+2025-07-02T19:26:20.4312875Z @@ -1,31 +1,35 @@
+2025-07-02T19:26:20.4313235Z  from pydantic import BaseModel
+2025-07-02T19:26:20.4313685Z  from typing import Optional
+2025-07-02T19:26:20.4314105Z  from datetime import datetime
+2025-07-02T19:26:20.4314547Z  from app.models.task import TaskStatus
+2025-07-02T19:26:20.4314970Z +
+2025-07-02T19:26:20.4315229Z  
+2025-07-02T19:26:20.4315525Z  class TaskBase(BaseModel):
+2025-07-02T19:26:20.4315903Z      title: str
+2025-07-02T19:26:20.4316248Z      description: Optional[str] = None
+2025-07-02T19:26:20.4316715Z      status: TaskStatus = TaskStatus.TODO
+2025-07-02T19:26:20.4317190Z      due_date: Optional[datetime] = None
+2025-07-02T19:26:20.4317610Z  
+2025-07-02T19:26:20.4317872Z +
+2025-07-02T19:26:20.4318164Z  class TaskCreate(TaskBase):
+2025-07-02T19:26:20.4318558Z      project_id: int
+2025-07-02T19:26:20.4318926Z      assigned_to: Optional[int] = None
+2025-07-02T19:26:20.4319345Z +
+2025-07-02T19:26:20.4319598Z  
+2025-07-02T19:26:20.4319893Z  class TaskUpdate(BaseModel):
+2025-07-02T19:26:20.4320309Z      title: Optional[str] = None
+2025-07-02T19:26:20.4320756Z      description: Optional[str] = None
+2025-07-02T19:26:20.4321440Z      status: Optional[TaskStatus] = None
+2025-07-02T19:26:20.4321936Z      assigned_to: Optional[int] = None
+2025-07-02T19:26:20.4322414Z      due_date: Optional[datetime] = None
+2025-07-02T19:26:20.4322806Z  
+2025-07-02T19:26:20.4323041Z +
+2025-07-02T19:26:20.4323287Z  class Task(TaskBase):
+2025-07-02T19:26:20.4323616Z      id: int
+2025-07-02T19:26:20.4323916Z      project_id: int
+2025-07-02T19:26:20.4324298Z      assigned_to: Optional[int] = None
+2025-07-02T19:26:20.4324759Z      created_at: datetime
+2025-07-02T19:26:20.4325164Z      updated_at: Optional[datetime] = None
+2025-07-02T19:26:20.4325593Z -    
+2025-07-02T19:26:20.4325881Z +
+2025-07-02T19:26:20.4326151Z      class Config:
+2025-07-02T19:26:20.4326501Z -        from_attributes = True 
+2025-07-02T19:26:20.4326925Z \ No newline at end of file
+2025-07-02T19:26:20.4327310Z +        from_attributes = True
+2025-07-02T19:26:20.4328050Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/schemas/task.py
+2025-07-02T19:26:20.4343972Z --- /home/runner/work/campus-connect/campus-connect/backend/app/schemas/user.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4349568Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/schemas/user.py	2025-07-02 19:26:20.433007+00:00
+2025-07-02T19:26:20.4352458Z @@ -1,25 +1,29 @@
+2025-07-02T19:26:20.4353690Z  from pydantic import BaseModel, EmailStr
+2025-07-02T19:26:20.4354216Z  from typing import Optional
+2025-07-02T19:26:20.4354633Z  from datetime import datetime
+2025-07-02T19:26:20.4355026Z +
+2025-07-02T19:26:20.4355289Z  
+2025-07-02T19:26:20.4355574Z  class UserBase(BaseModel):
+2025-07-02T19:26:20.4355961Z      email: EmailStr
+2025-07-02T19:26:20.4356290Z      username: str
+2025-07-02T19:26:20.4356614Z      full_name: str
+2025-07-02T19:26:20.4356912Z  
+2025-07-02T19:26:20.4357171Z +
+2025-07-02T19:26:20.4357461Z  class UserCreate(UserBase):
+2025-07-02T19:26:20.4357867Z      password: str
+2025-07-02T19:26:20.4358183Z +
+2025-07-02T19:26:20.4358448Z  
+2025-07-02T19:26:20.4359035Z  class UserUpdate(BaseModel):
+2025-07-02T19:26:20.4359476Z      email: Optional[EmailStr] = None
+2025-07-02T19:26:20.4359931Z      username: Optional[str] = None
+2025-07-02T19:26:20.4360369Z      full_name: Optional[str] = None
+2025-07-02T19:26:20.4360780Z  
+2025-07-02T19:26:20.4361031Z +
+2025-07-02T19:26:20.4361517Z  class User(UserBase):
+2025-07-02T19:26:20.4361848Z      id: int
+2025-07-02T19:26:20.4362146Z      is_active: bool
+2025-07-02T19:26:20.4362486Z      created_at: datetime
+2025-07-02T19:26:20.4363155Z      updated_at: Optional[datetime] = None
+2025-07-02T19:26:20.4363575Z -    
+2025-07-02T19:26:20.4363853Z +
+2025-07-02T19:26:20.4364118Z      class Config:
+2025-07-02T19:26:20.4364460Z -        from_attributes = True 
+2025-07-02T19:26:20.4364878Z \ No newline at end of file
+2025-07-02T19:26:20.4365259Z +        from_attributes = True
+2025-07-02T19:26:20.4365994Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/schemas/user.py
+2025-07-02T19:26:20.4394843Z --- /home/runner/work/campus-connect/campus-connect/backend/tests/__init__.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4398032Z +++ /home/runner/work/campus-connect/campus-connect/backend/tests/__init__.py	2025-07-02 19:26:20.438596+00:00
+2025-07-02T19:26:20.4398926Z @@ -1 +1 @@
+2025-07-02T19:26:20.4399235Z -# Tests package 
+2025-07-02T19:26:20.4399577Z \ No newline at end of file
+2025-07-02T19:26:20.4399952Z +# Tests package
+2025-07-02T19:26:20.4413384Z would reformat /home/runner/work/campus-connect/campus-connect/backend/tests/__init__.py
+2025-07-02T19:26:20.4545980Z --- /home/runner/work/campus-connect/campus-connect/backend/app/services/project_service.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4547985Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/services/project_service.py	2025-07-02 19:26:20.453359+00:00
+2025-07-02T19:26:20.4548971Z @@ -1,46 +1,45 @@
+2025-07-02T19:26:20.4549323Z  from sqlalchemy.orm import Session
+2025-07-02T19:26:20.4549785Z  from app.models.project import Project
+2025-07-02T19:26:20.4550403Z  from app.schemas.project import ProjectCreate, ProjectUpdate
+2025-07-02T19:26:20.4550935Z  
+2025-07-02T19:26:20.4551361Z +
+2025-07-02T19:26:20.4551639Z  class ProjectService:
+2025-07-02T19:26:20.4552011Z      def __init__(self, db: Session):
+2025-07-02T19:26:20.4552441Z          self.db = db
+2025-07-02T19:26:20.4552738Z -    
+2025-07-02T19:26:20.4552990Z +
+2025-07-02T19:26:20.4553460Z      def create_project(self, project: ProjectCreate, owner_id: int) -> Project:
+2025-07-02T19:26:20.4554101Z          db_project = Project(
+2025-07-02T19:26:20.4554477Z -            title=project.title,
+2025-07-02T19:26:20.4554917Z -            description=project.description,
+2025-07-02T19:26:20.4555362Z -            owner_id=owner_id
+2025-07-02T19:26:20.4555928Z +            title=project.title, description=project.description, owner_id=owner_id
+2025-07-02T19:26:20.4556529Z          )
+2025-07-02T19:26:20.4556814Z          self.db.add(db_project)
+2025-07-02T19:26:20.4557197Z          self.db.commit()
+2025-07-02T19:26:20.4557555Z          self.db.refresh(db_project)
+2025-07-02T19:26:20.4557960Z          return db_project
+2025-07-02T19:26:20.4558281Z -    
+2025-07-02T19:26:20.4558986Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/services/project_service.py
+2025-07-02T19:26:20.4559783Z +
+2025-07-02T19:26:20.4560136Z      def get_projects(self, skip: int = 0, limit: int = 100):
+2025-07-02T19:26:20.4560777Z          return self.db.query(Project).offset(skip).limit(limit).all()
+2025-07-02T19:26:20.4561449Z -    
+2025-07-02T19:26:20.4561709Z +
+2025-07-02T19:26:20.4562026Z      def get_project(self, project_id: int):
+2025-07-02T19:26:20.4562671Z          return self.db.query(Project).filter(Project.id == project_id).first()
+2025-07-02T19:26:20.4563275Z -    
+2025-07-02T19:26:20.4563546Z +
+2025-07-02T19:26:20.4564044Z      def update_project(self, project_id: int, project_update: ProjectUpdate):
+2025-07-02T19:26:20.4564741Z          db_project = self.get_project(project_id)
+2025-07-02T19:26:20.4565583Z          if not db_project:
+2025-07-02T19:26:20.4565955Z              return None
+2025-07-02T19:26:20.4566299Z -        
+2025-07-02T19:26:20.4566579Z +
+2025-07-02T19:26:20.4566960Z          update_data = project_update.dict(exclude_unset=True)
+2025-07-02T19:26:20.4567531Z          for field, value in update_data.items():
+2025-07-02T19:26:20.4568041Z              setattr(db_project, field, value)
+2025-07-02T19:26:20.4568478Z -        
+2025-07-02T19:26:20.4569009Z +
+2025-07-02T19:26:20.4569305Z          self.db.commit()
+2025-07-02T19:26:20.4569696Z          self.db.refresh(db_project)
+2025-07-02T19:26:20.4570121Z          return db_project
+2025-07-02T19:26:20.4570466Z -    
+2025-07-02T19:26:20.4570740Z +
+2025-07-02T19:26:20.4571094Z      def delete_project(self, project_id: int) -> bool:
+2025-07-02T19:26:20.4571855Z          db_project = self.get_project(project_id)
+2025-07-02T19:26:20.4572341Z          if not db_project:
+2025-07-02T19:26:20.4572710Z              return False
+2025-07-02T19:26:20.4573065Z -        
+2025-07-02T19:26:20.4573334Z +
+2025-07-02T19:26:20.4573630Z          self.db.delete(db_project)
+2025-07-02T19:26:20.4574049Z          self.db.commit()
+2025-07-02T19:26:20.4574418Z -        return True 
+2025-07-02T19:26:20.4574766Z \ No newline at end of file
+2025-07-02T19:26:20.4575121Z +        return True
+2025-07-02T19:26:20.4642671Z --- /home/runner/work/campus-connect/campus-connect/backend/tests/test_main.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4643960Z +++ /home/runner/work/campus-connect/campus-connect/backend/tests/test_main.py	2025-07-02 19:26:20.463144+00:00
+2025-07-02T19:26:20.4644819Z @@ -1,28 +1,32 @@
+2025-07-02T19:26:20.4645166Z  import pytest
+2025-07-02T19:26:20.4645556Z  from fastapi.testclient import TestClient
+2025-07-02T19:26:20.4646067Z  from app.main import app
+2025-07-02T19:26:20.4646421Z  
+2025-07-02T19:26:20.4646720Z  client = TestClient(app)
+2025-07-02T19:26:20.4647069Z +
+2025-07-02T19:26:20.4647331Z  
+2025-07-02T19:26:20.4647635Z  def test_read_root():
+2025-07-02T19:26:20.4648002Z      """Test the root endpoint"""
+2025-07-02T19:26:20.4648434Z      response = client.get("/")
+2025-07-02T19:26:20.4648839Z      assert response.status_code == 200
+2025-07-02T19:26:20.4649451Z      assert response.json() == {"message": "Welcome to CampusConnect API"}
+2025-07-02T19:26:20.4650033Z  
+2025-07-02T19:26:20.4650291Z +
+2025-07-02T19:26:20.4650569Z  def test_health_check():
+2025-07-02T19:26:20.4650980Z      """Test the health check endpoint"""
+2025-07-02T19:26:20.4651687Z      response = client.get("/health")
+2025-07-02T19:26:20.4652148Z      assert response.status_code == 200
+2025-07-02T19:26:20.4652660Z      assert response.json() == {"status": "healthy"}
+2025-07-02T19:26:20.4653131Z  
+2025-07-02T19:26:20.4653398Z +
+2025-07-02T19:26:20.4653768Z  def test_api_docs():
+2025-07-02T19:26:20.4654182Z      """Test that API documentation is accessible"""
+2025-07-02T19:26:20.4654683Z      response = client.get("/docs")
+2025-07-02T19:26:20.4655158Z      assert response.status_code == 200
+2025-07-02T19:26:20.4655582Z  
+2025-07-02T19:26:20.4655832Z +
+2025-07-02T19:26:20.4656130Z  def test_openapi_schema():
+2025-07-02T19:26:20.4656560Z      """Test that OpenAPI schema is accessible"""
+2025-07-02T19:26:20.4657075Z      response = client.get("/openapi.json")
+2025-07-02T19:26:20.4657568Z      assert response.status_code == 200
+2025-07-02T19:26:20.4658046Z -    assert "openapi" in response.json() 
+2025-07-02T19:26:20.4658516Z \ No newline at end of file
+2025-07-02T19:26:20.4658950Z +    assert "openapi" in response.json()
+2025-07-02T19:26:20.4663785Z would reformat /home/runner/work/campus-connect/campus-connect/backend/tests/test_main.py
+2025-07-02T19:26:20.4681448Z --- /home/runner/work/campus-connect/campus-connect/backend/app/services/task_service.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4682964Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/services/task_service.py	2025-07-02 19:26:20.467161+00:00
+2025-07-02T19:26:20.4684639Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/services/task_service.py
+2025-07-02T19:26:20.4685479Z @@ -1,52 +1,53 @@
+2025-07-02T19:26:20.4685840Z  from sqlalchemy.orm import Session
+2025-07-02T19:26:20.4686304Z  from app.models.task import Task
+2025-07-02T19:26:20.4686823Z  from app.schemas.task import TaskCreate, TaskUpdate
+2025-07-02T19:26:20.4687322Z  
+2025-07-02T19:26:20.4687577Z +
+2025-07-02T19:26:20.4687852Z  class TaskService:
+2025-07-02T19:26:20.4688470Z      def __init__(self, db: Session):
+2025-07-02T19:26:20.4688887Z          self.db = db
+2025-07-02T19:26:20.4689204Z -    
+2025-07-02T19:26:20.4689465Z +
+2025-07-02T19:26:20.4689815Z      def create_task(self, task: TaskCreate) -> Task:
+2025-07-02T19:26:20.4690299Z          db_task = Task(
+2025-07-02T19:26:20.4690668Z              title=task.title,
+2025-07-02T19:26:20.4691078Z              description=task.description,
+2025-07-02T19:26:20.4691744Z              status=task.status,
+2025-07-02T19:26:20.4692189Z              project_id=task.project_id,
+2025-07-02T19:26:20.4692670Z              assigned_to=task.assigned_to,
+2025-07-02T19:26:20.4693136Z -            due_date=task.due_date
+2025-07-02T19:26:20.4693560Z +            due_date=task.due_date,
+2025-07-02T19:26:20.4693958Z          )
+2025-07-02T19:26:20.4694260Z          self.db.add(db_task)
+2025-07-02T19:26:20.4694653Z          self.db.commit()
+2025-07-02T19:26:20.4695033Z          self.db.refresh(db_task)
+2025-07-02T19:26:20.4695436Z          return db_task
+2025-07-02T19:26:20.4695801Z -    
+2025-07-02T19:26:20.4696063Z +
+2025-07-02T19:26:20.4696432Z      def get_tasks(self, skip: int = 0, limit: int = 100):
+2025-07-02T19:26:20.4697055Z          return self.db.query(Task).offset(skip).limit(limit).all()
+2025-07-02T19:26:20.4697594Z -    
+2025-07-02T19:26:20.4697859Z +
+2025-07-02T19:26:20.4698229Z      def get_tasks_by_project(self, project_id: int):
+2025-07-02T19:26:20.4698904Z          return self.db.query(Task).filter(Task.project_id == project_id).all()
+2025-07-02T19:26:20.4699520Z -    
+2025-07-02T19:26:20.4699786Z +
+2025-07-02T19:26:20.4700082Z      def get_task(self, task_id: int):
+2025-07-02T19:26:20.4700673Z          return self.db.query(Task).filter(Task.id == task_id).first()
+2025-07-02T19:26:20.4701444Z -    
+2025-07-02T19:26:20.4701732Z +
+2025-07-02T19:26:20.4702149Z      def update_task(self, task_id: int, task_update: TaskUpdate):
+2025-07-02T19:26:20.4702741Z          db_task = self.get_task(task_id)
+2025-07-02T19:26:20.4703182Z          if not db_task:
+2025-07-02T19:26:20.4703556Z              return None
+2025-07-02T19:26:20.4703891Z -        
+2025-07-02T19:26:20.4704161Z +
+2025-07-02T19:26:20.4704539Z          update_data = task_update.dict(exclude_unset=True)
+2025-07-02T19:26:20.4705104Z          for field, value in update_data.items():
+2025-07-02T19:26:20.4705603Z              setattr(db_task, field, value)
+2025-07-02T19:26:20.4706015Z -        
+2025-07-02T19:26:20.4706292Z +
+2025-07-02T19:26:20.4706567Z          self.db.commit()
+2025-07-02T19:26:20.4706961Z          self.db.refresh(db_task)
+2025-07-02T19:26:20.4707350Z          return db_task
+2025-07-02T19:26:20.4707675Z -    
+2025-07-02T19:26:20.4707931Z +
+2025-07-02T19:26:20.4708261Z      def delete_task(self, task_id: int) -> bool:
+2025-07-02T19:26:20.4708759Z          db_task = self.get_task(task_id)
+2025-07-02T19:26:20.4709186Z          if not db_task:
+2025-07-02T19:26:20.4709546Z              return False
+2025-07-02T19:26:20.4709864Z -        
+2025-07-02T19:26:20.4710131Z +
+2025-07-02T19:26:20.4710429Z          self.db.delete(db_task)
+2025-07-02T19:26:20.4710831Z          self.db.commit()
+2025-07-02T19:26:20.4711384Z -        return True 
+2025-07-02T19:26:20.4711737Z \ No newline at end of file
+2025-07-02T19:26:20.4712076Z +        return True
+2025-07-02T19:26:20.4777105Z --- /home/runner/work/campus-connect/campus-connect/backend/app/services/user_service.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.4778643Z +++ /home/runner/work/campus-connect/campus-connect/backend/app/services/user_service.py	2025-07-02 19:26:20.476628+00:00
+2025-07-02T19:26:20.4779828Z @@ -3,58 +3,59 @@
+2025-07-02T19:26:20.4780250Z  from app.schemas.user import UserCreate, UserUpdate
+2025-07-02T19:26:20.4780815Z  from passlib.context import CryptContext
+2025-07-02T19:26:20.4781426Z  
+2025-07-02T19:26:20.4781869Z  pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+2025-07-02T19:26:20.4782423Z  
+2025-07-02T19:26:20.4782667Z +
+2025-07-02T19:26:20.4782923Z  class UserService:
+2025-07-02T19:26:20.4783498Z      def __init__(self, db: Session):
+2025-07-02T19:26:20.4783906Z          self.db = db
+2025-07-02T19:26:20.4784211Z -    
+2025-07-02T19:26:20.4784473Z +
+2025-07-02T19:26:20.4784823Z      def get_password_hash(self, password: str) -> str:
+2025-07-02T19:26:20.4785394Z          return pwd_context.hash(password)
+2025-07-02T19:26:20.4785805Z -    
+2025-07-02T19:26:20.4786063Z +
+2025-07-02T19:26:20.4786555Z      def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+2025-07-02T19:26:20.4787366Z          return pwd_context.verify(plain_password, hashed_password)
+2025-07-02T19:26:20.4787894Z -    
+2025-07-02T19:26:20.4788153Z +
+2025-07-02T19:26:20.4788498Z      def create_user(self, user: UserCreate) -> User:
+2025-07-02T19:26:20.4789063Z          hashed_password = self.get_password_hash(user.password)
+2025-07-02T19:26:20.4789591Z          db_user = User(
+2025-07-02T19:26:20.4789941Z              email=user.email,
+2025-07-02T19:26:20.4790330Z              username=user.username,
+2025-07-02T19:26:20.4790759Z              full_name=user.full_name,
+2025-07-02T19:26:20.4791418Z -            hashed_password=hashed_password
+2025-07-02T19:26:20.4791897Z +            hashed_password=hashed_password,
+2025-07-02T19:26:20.4792318Z          )
+2025-07-02T19:26:20.4792608Z          self.db.add(db_user)
+2025-07-02T19:26:20.4792986Z          self.db.commit()
+2025-07-02T19:26:20.4793349Z          self.db.refresh(db_user)
+2025-07-02T19:26:20.4793730Z          return db_user
+2025-07-02T19:26:20.4794045Z -    
+2025-07-02T19:26:20.4794299Z +
+2025-07-02T19:26:20.4794646Z      def get_users(self, skip: int = 0, limit: int = 100):
+2025-07-02T19:26:20.4795257Z          return self.db.query(User).offset(skip).limit(limit).all()
+2025-07-02T19:26:20.4795771Z -    
+2025-07-02T19:26:20.4796019Z +
+2025-07-02T19:26:20.4796308Z      def get_user(self, user_id: int):
+2025-07-02T19:26:20.4796865Z          return self.db.query(User).filter(User.id == user_id).first()
+2025-07-02T19:26:20.4797388Z -    
+2025-07-02T19:26:20.4797647Z +
+2025-07-02T19:26:20.4797956Z      def get_user_by_email(self, email: str):
+2025-07-02T19:26:20.4798544Z          return self.db.query(User).filter(User.email == email).first()
+2025-07-02T19:26:20.4799074Z -    
+2025-07-02T19:26:20.4799331Z +
+2025-07-02T19:26:20.4799724Z      def update_user(self, user_id: int, user_update: UserUpdate):
+2025-07-02T19:26:20.4800289Z          db_user = self.get_user(user_id)
+2025-07-02T19:26:20.4800711Z          if not db_user:
+2025-07-02T19:26:20.4801281Z              return None
+2025-07-02T19:26:20.4801642Z -        
+2025-07-02T19:26:20.4801905Z +
+2025-07-02T19:26:20.4802261Z          update_data = user_update.dict(exclude_unset=True)
+2025-07-02T19:26:20.4802800Z          for field, value in update_data.items():
+2025-07-02T19:26:20.4803285Z              setattr(db_user, field, value)
+2025-07-02T19:26:20.4803683Z -        
+2025-07-02T19:26:20.4803951Z +
+2025-07-02T19:26:20.4804211Z          self.db.commit()
+2025-07-02T19:26:20.4804576Z          self.db.refresh(db_user)
+2025-07-02T19:26:20.4804966Z          return db_user
+2025-07-02T19:26:20.4805289Z -    
+2025-07-02T19:26:20.4805540Z +
+2025-07-02T19:26:20.4805860Z      def delete_user(self, user_id: int) -> bool:
+2025-07-02T19:26:20.4806356Z          db_user = self.get_user(user_id)
+2025-07-02T19:26:20.4806772Z          if not db_user:
+2025-07-02T19:26:20.4807116Z              return False
+2025-07-02T19:26:20.4807434Z -        
+2025-07-02T19:26:20.4807698Z +
+2025-07-02T19:26:20.4807970Z          self.db.delete(db_user)
+2025-07-02T19:26:20.4808581Z          self.db.commit()
+2025-07-02T19:26:20.4808918Z -        return True 
+2025-07-02T19:26:20.4809266Z \ No newline at end of file
+2025-07-02T19:26:20.4809618Z +        return True
+2025-07-02T19:26:20.4810353Z would reformat /home/runner/work/campus-connect/campus-connect/backend/app/services/user_service.py
+2025-07-02T19:26:20.5054869Z --- /home/runner/work/campus-connect/campus-connect/backend/tests/test_users.py	2025-07-02 19:26:03.529671+00:00
+2025-07-02T19:26:20.5056732Z +++ /home/runner/work/campus-connect/campus-connect/backend/tests/test_users.py	2025-07-02 19:26:20.504245+00:00
+2025-07-02T19:26:20.5057755Z @@ -7,84 +7,94 @@
+2025-07-02T19:26:20.5058231Z  from app.services.user_service import UserService
+2025-07-02T19:26:20.5058887Z  from app.schemas.user import UserCreate
+2025-07-02T19:26:20.5059341Z  
+2025-07-02T19:26:20.5059627Z  # Create test database
+2025-07-02T19:26:20.5060080Z  SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+2025-07-02T19:26:20.5060957Z -engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+2025-07-02T19:26:20.5061908Z +engine = create_engine(
+2025-07-02T19:26:20.5062468Z +    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+2025-07-02T19:26:20.5063134Z +)
+2025-07-02T19:26:20.5063685Z  TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+2025-07-02T19:26:20.5064441Z +
+2025-07-02T19:26:20.5064726Z  
+2025-07-02T19:26:20.5065033Z  def override_get_db():
+2025-07-02T19:26:20.5065412Z      try:
+2025-07-02T19:26:20.5065751Z          db = TestingSessionLocal()
+2025-07-02T19:26:20.5066044Z          yield db
+2025-07-02T19:26:20.5066245Z      finally:
+2025-07-02T19:26:20.5066408Z          db.close()
+2025-07-02T19:26:20.5066578Z  
+2025-07-02T19:26:20.5066714Z +
+2025-07-02T19:26:20.5067015Z  app.dependency_overrides[get_db] = override_get_db
+2025-07-02T19:26:20.5067663Z +
+2025-07-02T19:26:20.5067906Z  
+2025-07-02T19:26:20.5068219Z  @pytest.fixture(scope="function")
+2025-07-02T19:26:20.5068636Z  def test_db():
+2025-07-02T19:26:20.5068923Z      Base.metadata.create_all(bind=engine)
+2025-07-02T19:26:20.5069342Z      yield
+2025-07-02T19:26:20.5069625Z      Base.metadata.drop_all(bind=engine)
+2025-07-02T19:26:20.5070029Z  
+2025-07-02T19:26:20.5070234Z +
+2025-07-02T19:26:20.5070392Z  client = TestClient(app)
+2025-07-02T19:26:20.5070586Z +
+2025-07-02T19:26:20.5070723Z  
+2025-07-02T19:26:20.5070872Z  def test_create_user(test_db):
+2025-07-02T19:26:20.5071373Z      """Test creating a new user"""
+2025-07-02T19:26:20.5071636Z      user_data = {
+2025-07-02T19:26:20.5071839Z          "email": "test@university.edu",
+2025-07-02T19:26:20.5072084Z          "username": "testuser",
+2025-07-02T19:26:20.5072301Z          "full_name": "Test User",
+2025-07-02T19:26:20.5072537Z -        "password": "testpassword123"
+2025-07-02T19:26:20.5072789Z +        "password": "testpassword123",
+2025-07-02T19:26:20.5073005Z      }
+2025-07-02T19:26:20.5073229Z      response = client.post("/api/v1/users/", json=user_data)
+2025-07-02T19:26:20.5073542Z      assert response.status_code == 201
+2025-07-02T19:26:20.5073775Z      data = response.json()
+2025-07-02T19:26:20.5074001Z      assert data["email"] == user_data["email"]
+2025-07-02T19:26:20.5074279Z      assert data["username"] == user_data["username"]
+2025-07-02T19:26:20.5074578Z      assert data["full_name"] == user_data["full_name"]
+2025-07-02T19:26:20.5074831Z      assert "id" in data
+2025-07-02T19:26:20.5075041Z      assert "hashed_password" not in data
+2025-07-02T19:26:20.5075262Z  
+2025-07-02T19:26:20.5075403Z +
+2025-07-02T19:26:20.5075574Z  def test_get_users(test_db):
+2025-07-02T19:26:20.5075783Z      """Test getting all users"""
+2025-07-02T19:26:20.5076001Z      # First create a user
+2025-07-02T19:26:20.5076187Z      user_data = {
+2025-07-02T19:26:20.5076379Z          "email": "test@university.edu",
+2025-07-02T19:26:20.5076610Z          "username": "testuser",
+2025-07-02T19:26:20.5076827Z          "full_name": "Test User",
+2025-07-02T19:26:20.5077054Z -        "password": "testpassword123"
+2025-07-02T19:26:20.5077497Z +        "password": "testpassword123",
+2025-07-02T19:26:20.5077721Z      }
+2025-07-02T19:26:20.5077918Z      client.post("/api/v1/users/", json=user_data)
+2025-07-02T19:26:20.5078163Z -    
+2025-07-02T19:26:20.5078304Z +
+2025-07-02T19:26:20.5078458Z      # Then get all users
+2025-07-02T19:26:20.5078669Z      response = client.get("/api/v1/users/")
+2025-07-02T19:26:20.5078934Z      assert response.status_code == 200
+2025-07-02T19:26:20.5079162Z      data = response.json()
+2025-07-02T19:26:20.5079484Z      assert len(data) >= 1
+2025-07-02T19:26:20.5079701Z      assert data[0]["email"] == user_data["email"]
+2025-07-02T19:26:20.5079936Z +
+2025-07-02T19:26:20.5080071Z  
+2025-07-02T19:26:20.5080230Z  def test_get_user(test_db):
+2025-07-02T19:26:20.5080450Z      """Test getting a specific user"""
+2025-07-02T19:26:20.5080670Z      # First create a user
+2025-07-02T19:26:20.5080864Z      user_data = {
+2025-07-02T19:26:20.5081045Z          "email": "test@university.edu",
+2025-07-02T19:26:20.5081532Z          "username": "testuser",
+2025-07-02T19:26:20.5081748Z          "full_name": "Test User",
+2025-07-02T19:26:20.5081979Z -        "password": "testpassword123"
+2025-07-02T19:26:20.5082215Z +        "password": "testpassword123",
+2025-07-02T19:26:20.5082430Z      }
+2025-07-02T19:26:20.5082658Z      create_response = client.post("/api/v1/users/", json=user_data)
+2025-07-02T19:26:20.5082982Z      user_id = create_response.json()["id"]
+2025-07-02T19:26:20.5083208Z -    
+2025-07-02T19:26:20.5083352Z +
+2025-07-02T19:26:20.5083508Z      # Then get the specific user
+2025-07-02T19:26:20.5083757Z      response = client.get(f"/api/v1/users/{user_id}")
+2025-07-02T19:26:20.5084034Z      assert response.status_code == 200
+2025-07-02T19:26:20.5084263Z      data = response.json()
+2025-07-02T19:26:20.5084465Z      assert data["id"] == user_id
+2025-07-02T19:26:20.5084691Z      assert data["email"] == user_data["email"]
+2025-07-02T19:26:20.5084920Z  
+2025-07-02T19:26:20.5085053Z +
+2025-07-02T19:26:20.5085214Z  def test_get_user_not_found(test_db):
+2025-07-02T19:26:20.5085468Z      """Test getting a user that doesn't exist"""
+2025-07-02T19:26:20.5085731Z      response = client.get("/api/v1/users/999")
+2025-07-02T19:26:20.5085987Z      assert response.status_code == 404
+2025-07-02T19:26:20.5086260Z -    assert response.json()["detail"] == "User not found" 
+2025-07-02T19:26:20.5086550Z \ No newline at end of file
+2025-07-02T19:26:20.5086791Z +    assert response.json()["detail"] == "User not found"
+2025-07-02T19:26:20.5087241Z would reformat /home/runner/work/campus-connect/campus-connect/backend/tests/test_users.py
+2025-07-02T19:26:20.5146834Z 
+2025-07-02T19:26:20.5147807Z Oh no! 💥 💔 💥
+2025-07-02T19:26:20.5148155Z 20 files would be reformatted.
+2025-07-02T19:26:20.5412627Z ##[error]Process completed with exit code 1.
