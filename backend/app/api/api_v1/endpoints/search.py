@@ -3,19 +3,19 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.auth import get_current_user
 from app.models.user import User
 from app.models.project import Project
 from app.models.task import Task
 from app.models.project_member import ProjectMember
-from app.schemas.project import ProjectResponse
+from app.schemas.project import Project
 from app.schemas.task import TaskResponse
 from app.schemas.user import UserResponse
 
 router = APIRouter()
 
 
-@router.get("/projects", response_model=List[ProjectResponse])
+@router.get("/projects", response_model=List[Project])
 async def search_projects(
     q: str = Query(..., description="Search query"),
     db: Session = Depends(get_db),
