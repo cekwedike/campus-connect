@@ -43,12 +43,12 @@ const Login = () => {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
-            <Users className="w-8 h-8 text-white drop-shadow-lg" />
+            <Users className="w-8 h-8 text-gray-800" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">
             CampusConnect
           </h1>
-          <p className="text-white/90 text-lg drop-shadow-md">
+          <p className="text-gray-700 text-lg">
             Where students collaborate and succeed together
           </p>
         </div>
@@ -56,10 +56,10 @@ const Login = () => {
         {/* Login Form */}
         <div className="glass rounded-3xl p-8 shadow-2xl">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Welcome Back
             </h2>
-            <p className="text-white/90 drop-shadow-md">
+            <p className="text-gray-700">
               Sign in to continue your journey
             </p>
           </div>
@@ -67,7 +67,7 @@ const Login = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Username Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-white drop-shadow-md">
+              <label className="block text-sm font-medium text-gray-800">
                 Username
               </label>
               <div className="relative">
@@ -88,7 +88,7 @@ const Login = () => {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-white drop-shadow-md">
+              <label className="block text-sm font-medium text-gray-800">
                 Password
               </label>
               <div className="relative">
