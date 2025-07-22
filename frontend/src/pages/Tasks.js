@@ -313,7 +313,7 @@ const Tasks = () => {
                   type="text"
                   value={newTask.title}
                   onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Enter task title"
                   required
                 />
@@ -324,7 +324,7 @@ const Tasks = () => {
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Enter task description"
                   rows="3"
                 />
@@ -335,7 +335,7 @@ const Tasks = () => {
                 <select
                   value={newTask.project_id}
                   onChange={(e) => setNewTask({...newTask, project_id: e.target.value})}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
                   required
                 >
                   <option value="">Select a project</option>
@@ -350,7 +350,7 @@ const Tasks = () => {
                 <select
                   value={newTask.status}
                   onChange={(e) => setNewTask({...newTask, status: e.target.value})}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
                 >
                   <option value="todo">To Do</option>
                   <option value="in_progress">In Progress</option>
@@ -365,7 +365,7 @@ const Tasks = () => {
                   type="date"
                   value={newTask.due_date}
                   onChange={(e) => setNewTask({...newTask, due_date: e.target.value})}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
                 />
               </div>
 

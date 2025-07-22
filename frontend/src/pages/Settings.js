@@ -179,7 +179,7 @@ const Settings = () => {
                 <select
                   value={settings.privacy.profileVisibility}
                   onChange={(e) => handleSettingChange('privacy', 'profileVisibility', e.target.value)}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
                 >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
@@ -236,7 +236,7 @@ const Settings = () => {
                 <select
                   value={settings.appearance.theme}
                   onChange={(e) => handleSettingChange('appearance', 'theme', e.target.value)}
-                  className="input-modern"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
                 >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
@@ -279,7 +279,7 @@ const Settings = () => {
                     type={showCurrentPassword ? 'text' : 'password'}
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                    className="input-modern pr-10"
+                    className="w-full px-4 py-3 pr-10 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                     placeholder="Enter current password"
                     required
                   />
@@ -302,7 +302,7 @@ const Settings = () => {
                     type={showNewPassword ? 'text' : 'password'}
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                    className="input-modern pr-10"
+                    className="w-full px-4 py-3 pr-10 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                     placeholder="Enter new password"
                     required
                   />
@@ -325,7 +325,7 @@ const Settings = () => {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                    className="input-modern pr-10"
+                    className="w-full px-4 py-3 pr-10 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                     placeholder="Confirm new password"
                     required
                   />

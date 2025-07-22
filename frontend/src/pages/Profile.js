@@ -166,7 +166,7 @@ const Profile = () => {
                       type="text"
                       value={profileData.full_name}
                       onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
-                      className="input-modern"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                       placeholder="Enter your full name"
                     />
                   ) : (
@@ -187,7 +187,7 @@ const Profile = () => {
                       type="email"
                       value={profileData.email}
                       onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                      className="input-modern"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                       placeholder="Enter your email"
                     />
                   ) : (
@@ -208,7 +208,7 @@ const Profile = () => {
                       type="text"
                       value={profileData.username}
                       onChange={(e) => setProfileData({...profileData, username: e.target.value})}
-                      className="input-modern"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                       placeholder="Enter your username"
                     />
                   ) : (
