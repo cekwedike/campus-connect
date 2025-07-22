@@ -209,7 +209,7 @@ const Register = () => {
           {/* Login Link */}
           <Link
             to="/login"
-            className="w-full flex items-center justify-center space-x-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/30 transform hover:-translate-y-0.5 transition-all duration-200"
+            className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
             <CheckCircle className="h-5 w-5" />
             <span>Sign In Instead</span>
