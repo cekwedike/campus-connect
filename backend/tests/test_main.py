@@ -26,6 +26,6 @@ def test_api_docs():
 
 def test_openapi_schema():
     """Test that OpenAPI schema is accessible"""
-    response = client.get("/openapi.json")
+    response = client.get("/api/v1/openapi.json")
     assert response.status_code == 200
     assert "openapi" in response.json()
