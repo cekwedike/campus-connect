@@ -12,9 +12,9 @@ router = APIRouter()
 
 @router.post("/", response_model=Project, status_code=status.HTTP_201_CREATED)
 def create_project(
-    project: ProjectCreate, 
+    project: ProjectCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Create a new project"""
     project_service = ProjectService(db)
@@ -23,10 +23,10 @@ def create_project(
 
 @router.get("/", response_model=List[Project])
 def get_projects(
-    skip: int = 0, 
-    limit: int = 100, 
+    skip: int = 0,
+    limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Get all projects for the current user"""
     project_service = ProjectService(db)

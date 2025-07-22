@@ -19,4 +19,4 @@ class TokenData(BaseModel):
 
 class LoginRequest(BaseModel):
     username: str
-    password: str 
+    password: str

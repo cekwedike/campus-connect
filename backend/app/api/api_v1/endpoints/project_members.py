@@ -2,14 +2,20 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.schemas.project_member import ProjectMember, ProjectMemberCreate, ProjectMemberUpdate
+from app.schemas.project_member import (
+    ProjectMember,
+    ProjectMemberCreate,
+    ProjectMemberUpdate,
+)
 from app.services.project_member_service import ProjectMemberService
 
 router = APIRouter()
 
 
 @router.post("/", response_model=ProjectMember, status_code=status.HTTP_201_CREATED)
-def add_project_member(project_member: ProjectMemberCreate, db: Session = Depends(get_db)):
+def add_project_member(
+    project_member: ProjectMemberCreate, db: Session = Depends(get_db)
+):
     """Add a member to a project"""
     project_member_service = ProjectMemberService(db)
     return project_member_service.create_project_member(project_member)
@@ -46,10 +52,12 @@ def update_project_member_role(
     return project_member
 
 
-@router.delete("/project/{project_id}/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/project/{project_id}/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 def remove_project_member(project_id: int, user_id: int, db: Session = Depends(get_db)):
     """Remove a member from a project"""
     project_member_service = ProjectMemberService(db)
     success = project_member_service.delete_project_member(project_id, user_id)
     if not success:
-        raise HTTPException(status_code=404, detail="Project member not found") 
+        raise HTTPException(status_code=404, detail="Project member not found")

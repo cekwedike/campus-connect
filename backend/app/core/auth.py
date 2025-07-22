@@ -10,7 +10,7 @@ security = HTTPBearer()
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     token = credentials.credentials
     username = verify_token(token)
@@ -20,7 +20,7 @@ def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     user_service = UserService(db)
     user = user_service.get_user_by_username(username)
     if user is None:
@@ -32,7 +32,7 @@ def get_current_user(
     return user
 
 
-def get_current_active_user(current_user = Depends(get_current_user)):
+def get_current_active_user(current_user=Depends(get_current_user)):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user 
+    return current_user
