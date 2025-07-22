@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Tasks from './pages/Tasks';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import './App.css';
 
 // Protected Route Component
@@ -47,6 +49,16 @@ const AppContent = () => {
             <Route path="/tasks" element={
               <ProtectedRoute>
                 <Tasks />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             } />
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />

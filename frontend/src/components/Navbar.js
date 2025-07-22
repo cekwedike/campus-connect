@@ -103,14 +103,20 @@ const Navbar = () => {
                     <p className="text-sm font-medium text-gray-900">{user?.full_name || user?.username}</p>
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                  <Link
+                    to="/profile"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                  >
                     <User className="h-4 w-4" />
                     <span>Profile</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                  >
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
-                  </button>
+                  </Link>
                   <div className="border-t border-gray-100">
                     <button
                       onClick={handleLogout}
@@ -176,14 +182,22 @@ const Navbar = () => {
               </div>
               
               <div className="mt-2 space-y-1">
-                <button className="flex items-center space-x-3 w-full px-3 py-2 text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                <Link
+                  to="/profile"
+                  className="flex items-center space-x-3 w-full px-3 py-2 text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   <User className="w-4 h-4" />
                   <span>Profile</span>
-                </button>
-                <button className="flex items-center space-x-3 w-full px-3 py-2 text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                </Link>
+                <Link
+                  to="/settings"
+                  className="flex items-center space-x-3 w-full px-3 py-2 text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   <Settings className="w-4 h-4" />
                   <span>Settings</span>
-                </button>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-3 w-full px-3 py-2 text-left text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200"
