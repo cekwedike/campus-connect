@@ -8,14 +8,14 @@ from app.models.user import User
 from app.models.project import Project
 from app.models.task import Task
 from app.models.project_member import ProjectMember
-from app.schemas.project import Project
-from app.schemas.task import TaskResponse
-from app.schemas.user import UserResponse
+from app.schemas.project import Project as ProjectSchema
+from app.schemas.task import Task as TaskSchema
+from app.schemas.user import User as UserSchema
 
 router = APIRouter()
 
 
-@router.get("/projects", response_model=List[Project])
+@router.get("/projects", response_model=List[ProjectSchema])
 async def search_projects(
     q: str = Query(..., description="Search query"),
     db: Session = Depends(get_db),
@@ -41,7 +41,7 @@ async def search_projects(
     ).distinct().all()
     
     return [
-        ProjectResponse(
+        ProjectSchema(
             id=project.id,
             title=project.title,
             description=project.description,
@@ -53,7 +53,7 @@ async def search_projects(
     ]
 
 
-@router.get("/tasks", response_model=List[TaskResponse])
+@router.get("/tasks", response_model=List[TaskSchema])
 async def search_tasks(
     q: str = Query(..., description="Search query"),
     project_id: Optional[int] = Query(None, description="Filter by project ID"),
@@ -77,7 +77,7 @@ async def search_tasks(
     ).all()
     
     return [
-        TaskResponse(
+        TaskSchema(
             id=task.id,
             title=task.title,
             description=task.description,
@@ -92,7 +92,7 @@ async def search_tasks(
     ]
 
 
-@router.get("/users", response_model=List[UserResponse])
+@router.get("/users", response_model=List[UserSchema])
 async def search_users(
     q: str = Query(..., description="Search query"),
     db: Session = Depends(get_db),
@@ -112,13 +112,15 @@ async def search_users(
     ).limit(20).all()  # Limit results
     
     return [
-        UserResponse(
+        UserSchema(
             id=user.id,
             username=user.username,
             email=user.email,
             full_name=user.full_name,
             profile_image=user.profile_image,
-            created_at=user.created_at
+            is_active=user.is_active,
+            created_at=user.created_at,
+            updated_at=user.updated_at
         )
         for user in users
     ]
