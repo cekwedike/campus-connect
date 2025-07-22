@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import create_access_token, verify_password
-from app.schemas.auth import Token, LoginRequest
+from app.schemas.auth import Token, LoginRequest, LoginResponse
 from app.schemas.user import User, UserCreate
 from app.services.user_service import UserService
 from app.core.config import settings
@@ -33,9 +33,9 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     return user_service.create_user(user)
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=LoginResponse)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Login user and return access token"""
+    """Login user and return access token with user data"""
     user_service = UserService(db)
     user = user_service.get_user_by_username(login_data.username)
     
@@ -57,7 +57,23 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    # Convert user model to dict for response
+    user_dict = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "full_name": user.full_name,
+        "profile_image": user.profile_image,
+        "is_active": user.is_active,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at
+    }
+    
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user": user_dict
+    }
 
 
 @router.post("/token", response_model=Token)

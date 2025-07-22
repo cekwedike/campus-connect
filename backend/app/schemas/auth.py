@@ -7,6 +7,12 @@ class Token(BaseModel):
     token_type: str
 
 
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: dict
+
+
 class TokenData(BaseModel):
     username: Optional[str] = None
 

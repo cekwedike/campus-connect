@@ -21,8 +21,9 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       // Set token in API headers
       authAPI.setToken(token);
-      // You could verify the token here if needed
-      setUser({ token }); // For now, just set basic user info
+      // For now, we'll set a basic user object
+      // In a real app, you'd verify the token and fetch user data
+      setUser({ token });
     }
     setLoading(false);
   }, []);
@@ -30,12 +31,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await authAPI.login(username, password);
-      const { access_token } = response.data;
+      const { access_token, user: userData } = response.data;
       
       localStorage.setItem('token', access_token);
       authAPI.setToken(access_token);
       
-      setUser({ token: access_token });
+      setUser({ ...userData, token: access_token });
       return { success: true };
     } catch (error) {
       return { 
