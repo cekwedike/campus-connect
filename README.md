@@ -6,11 +6,25 @@ CampusConnect is a centralized web platform for university students to find team
 
 ## Features
 
-- **User Authentication**: Sign up using school email and create/join projects
-- **Project Management**: Create projects, assign roles, and set tasks
-- **Task Tracking**: Monitor progress with task assignment and status updates
-- **File Sharing**: Share files and comments in project-specific threads
-- **Real-time Collaboration**: Team activity logs and progress tracking
+### ✅ Implemented Features
+- **User Authentication**: JWT-based authentication with secure password hashing
+- **User Registration & Login**: Complete user management system
+- **Project Management**: Create, view, update, and delete projects
+- **Task Management**: Create tasks with status tracking (TODO, IN_PROGRESS, REVIEW, DONE)
+- **Project Membership**: Add team members with role-based access (Owner, Admin, Member, Viewer)
+- **Dashboard**: Overview of projects, tasks, and statistics
+- **Responsive UI**: Modern, mobile-friendly interface built with React and Tailwind CSS
+- **API Documentation**: Auto-generated Swagger/OpenAPI documentation
+- **Database Migrations**: Alembic-based migration system
+- **Docker Support**: Complete containerization for easy deployment
+
+### 🚧 Planned Features
+- **File Sharing**: Share files and documents in project-specific threads
+- **Real-time Collaboration**: WebSocket-based real-time updates
+- **Comments & Discussions**: Thread-based discussions on tasks and projects
+- **Notifications**: Email and in-app notifications
+- **Advanced Search**: Search across projects, tasks, and team members
+- **Calendar Integration**: Sync with external calendar applications
 
 ## Tech Stack
 
@@ -55,7 +69,32 @@ campus-connect/
 - Docker and Docker Compose
 - PostgreSQL (or use Docker)
 
-### Backend Setup
+### Quick Start with Docker (Recommended)
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/campus-connect.git
+   cd campus-connect
+   ```
+
+2. Start all services:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+
+4. Create your first account:
+   - Go to http://localhost:3000/register
+   - Create a new account
+   - Start using the application!
+
+### Manual Setup
+
+#### Backend Setup
 
 1. Navigate to the backend directory:
    ```bash
@@ -75,7 +114,7 @@ campus-connect/
 
 4. Set up environment variables:
    ```bash
-   cp .env.example .env
+   cp env.example .env
    # Edit .env with your database credentials
    ```
 
@@ -89,7 +128,7 @@ campus-connect/
    uvicorn app.main:app --reload
    ```
 
-### Frontend Setup
+#### Frontend Setup
 
 1. Navigate to the frontend directory:
    ```bash
@@ -101,22 +140,15 @@ campus-connect/
    npm install
    ```
 
-3. Start the development server:
+3. Set up environment variables:
+   ```bash
+   cp env.example .env
+   ```
+
+4. Start the development server:
    ```bash
    npm start
    ```
-
-### Using Docker Compose (Recommended)
-
-1. Start all services:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
 
 ## Testing
 
