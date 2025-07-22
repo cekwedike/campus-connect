@@ -20,3 +20,4 @@ class User(Base):
     # Relationships
     projects = relationship("Project", back_populates="owner")
     project_memberships = relationship("ProjectMember", back_populates="user")
+    uploaded_files = relationship("File", back_populates="user")

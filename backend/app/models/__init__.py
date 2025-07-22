@@ -2,6 +2,7 @@ from .user import User
 from .project import Project
 from .task import Task, TaskStatus
 from .project_member import ProjectMember, MemberRole
+from .file import File
 from app.core.database import Base
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "TaskStatus",
     "ProjectMember",
     "MemberRole",
+    "File",
 ]

@@ -18,3 +18,4 @@ class Project(Base):
     owner = relationship("User", back_populates="projects")
     tasks = relationship("Task", back_populates="project")
     members = relationship("ProjectMember", back_populates="project")
+    files = relationship("File", back_populates="project")
