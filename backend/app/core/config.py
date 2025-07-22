@@ -27,9 +27,10 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
+    model_config = {
+        "case_sensitive": True,
+        "env_file": ".env"
+    }
 
 
 settings = Settings()
