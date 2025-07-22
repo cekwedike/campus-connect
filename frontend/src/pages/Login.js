@@ -151,7 +151,7 @@ const Login = () => {
           {/* Register Link */}
           <Link
             to="/register"
-            className="btn-secondary w-full flex items-center justify-center space-x-2"
+            className="w-full flex items-center justify-center space-x-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/30 transform hover:-translate-y-0.5 transition-all duration-200"
           >
             <Sparkles className="h-5 w-5" />
             <span>Create Account</span>

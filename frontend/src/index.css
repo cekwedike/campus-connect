@@ -99,7 +99,7 @@ code {
 }
 
 .btn-secondary {
-  @apply bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/20 transform hover:-translate-y-0.5 transition-all duration-200;
+  @apply bg-white/20 backdrop-blur-sm border border-white/30 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/30 transform hover:-translate-y-0.5 transition-all duration-200;
 }
 
 /* Card styles */
