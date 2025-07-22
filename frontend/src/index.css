@@ -93,6 +93,30 @@ code {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Force text colors for better visibility */
+.text-gray-800 {
+  color: #1f2937 !important;
+}
+
+.text-gray-700 {
+  color: #374151 !important;
+}
+
+/* Specific overrides for login/register pages */
+.min-h-screen h1.text-gray-800 {
+  color: #1f2937 !important;
+  font-weight: bold !important;
+}
+
+.min-h-screen p.text-gray-700 {
+  color: #374151 !important;
+}
+
+.min-h-screen label.text-gray-800 {
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
 /* Smooth transitions */
 * {
   transition: all 0.2s ease-in-out;
