@@ -83,7 +83,7 @@ const Register = () => {
                     minLength: { value: 3, message: 'Username must be at least 3 characters' }
                   })}
                   type="text"
-                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Choose a username"
                 />
               </div>
@@ -104,7 +104,7 @@ const Register = () => {
                 <input
                   {...register('full_name', { required: 'Full name is required' })}
                   type="text"
-                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -131,7 +131,7 @@ const Register = () => {
                     }
                   })}
                   type="email"
-                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Enter your email"
                 />
               </div>
@@ -155,7 +155,7 @@ const Register = () => {
                     minLength: { value: 6, message: 'Password must be at least 6 characters' }
                   })}
                   type={showPassword ? 'text' : 'password'}
-                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
                   placeholder="Create a strong password"
                 />
                 <button
