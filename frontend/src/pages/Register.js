@@ -83,7 +83,7 @@ const Register = () => {
                     minLength: { value: 3, message: 'Username must be at least 3 characters' }
                   })}
                   type="text"
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Choose a username"
                 />
               </div>
@@ -104,7 +104,7 @@ const Register = () => {
                 <input
                   {...register('full_name', { required: 'Full name is required' })}
                   type="text"
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -131,7 +131,7 @@ const Register = () => {
                     }
                   })}
                   type="email"
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Enter your email"
                 />
               </div>
@@ -155,7 +155,7 @@ const Register = () => {
                     minLength: { value: 6, message: 'Password must be at least 6 characters' }
                   })}
                   type={showPassword ? 'text' : 'password'}
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Create a strong password"
                 />
                 <button

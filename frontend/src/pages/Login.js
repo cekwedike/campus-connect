@@ -77,7 +77,7 @@ const Login = () => {
                 <input
                   {...register('username', { required: 'Username is required' })}
                   type="text"
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Enter your username"
                 />
               </div>
@@ -98,7 +98,7 @@ const Login = () => {
                 <input
                   {...register('password', { required: 'Password is required' })}
                   type={showPassword ? 'text' : 'password'}
-                  className="input-modern pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                  className="input-modern pl-12 bg-white/95 border-gray-300 text-gray-900 placeholder-gray-500"
                   placeholder="Enter your password"
                 />
                 <button
