@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     email: EmailStr
     username: str
     full_name: str
+    profile_image: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -18,6 +19,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     username: Optional[str] = None
     full_name: Optional[str] = None
+    profile_image: Optional[str] = None
 
 
 class User(UserBase):

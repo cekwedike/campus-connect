@@ -56,7 +56,16 @@ const Tasks = () => {
   const handleCreateTask = async (e) => {
     e.preventDefault();
     try {
-      await tasksAPI.createTask(newTask);
+      // Convert the task data to match the API schema
+      const taskData = {
+        title: newTask.title,
+        description: newTask.description,
+        status: newTask.status,
+        project_id: parseInt(newTask.project_id),
+        due_date: newTask.due_date ? new Date(newTask.due_date).toISOString() : null
+      };
+      
+      await tasksAPI.createTask(taskData);
       toast.success('Task created successfully!');
       setShowCreateModal(false);
       setNewTask({
@@ -68,7 +77,8 @@ const Tasks = () => {
       });
       fetchData();
     } catch (error) {
-      toast.error('Failed to create task');
+      console.error('Task creation error:', error);
+      toast.error('Failed to create task. Please check all required fields.');
     }
   };
 
