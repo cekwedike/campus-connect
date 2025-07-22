@@ -19,6 +19,9 @@ class ProjectService:
     def get_projects(self, skip: int = 0, limit: int = 100):
         return self.db.query(Project).offset(skip).limit(limit).all()
 
+    def get_user_projects(self, user_id: int, skip: int = 0, limit: int = 100):
+        return self.db.query(Project).filter(Project.owner_id == user_id).offset(skip).limit(limit).all()
+
     def get_project(self, project_id: int):
         return self.db.query(Project).filter(Project.id == project_id).first()
 

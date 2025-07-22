@@ -38,19 +38,20 @@ services:
       timeout: 10s
       retries: 3
 
-  # React Frontend (placeholder for future)
+  # React Frontend
   frontend:
-    image: node:16-alpine
+    build: ./frontend
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-    working_dir: /app
-    command: sh -c "npm install && npm start"
+      - "3000:80"
     depends_on:
       - backend
     environment:
       REACT_APP_API_URL: http://localhost:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data: 

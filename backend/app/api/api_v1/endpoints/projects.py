@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
+from app.core.auth import get_current_active_user
+from app.models.user import User
 from app.schemas.project import Project, ProjectCreate, ProjectUpdate
 from app.services.project_service import ProjectService
 
@@ -9,19 +11,26 @@ router = APIRouter()
 
 
 @router.post("/", response_model=Project, status_code=status.HTTP_201_CREATED)
-def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
+def create_project(
+    project: ProjectCreate, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Create a new project"""
     project_service = ProjectService(db)
-    # TODO: Get current user from authentication
-    owner_id = 1  # Temporary hardcoded for now
-    return project_service.create_project(project, owner_id)
+    return project_service.create_project(project, current_user.id)
 
 
 @router.get("/", response_model=List[Project])
-def get_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Get all projects"""
+def get_projects(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get all projects for the current user"""
     project_service = ProjectService(db)
-    return project_service.get_projects(skip=skip, limit=limit)
+    return project_service.get_user_projects(current_user.id, skip=skip, limit=limit)
 
 
 @router.get("/{project_id}", response_model=Project)

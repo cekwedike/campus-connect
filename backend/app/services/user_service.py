@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.core.security import get_password_hash, verify_password
 
 
 class UserService:
@@ -11,10 +9,10 @@ class UserService:
         self.db = db
 
     def get_password_hash(self, password: str) -> str:
-        return pwd_context.hash(password)
+        return get_password_hash(password)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+        return verify_password(plain_password, hashed_password)
 
     def create_user(self, user: UserCreate) -> User:
         hashed_password = self.get_password_hash(user.password)
@@ -37,6 +35,9 @@ class UserService:
 
     def get_user_by_email(self, email: str):
         return self.db.query(User).filter(User.email == email).first()
+
+    def get_user_by_username(self, username: str):
+        return self.db.query(User).filter(User.username == username).first()
 
     def update_user(self, user_id: int, user_update: UserUpdate):
         db_user = self.get_user(user_id)
