@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import { projectsAPI, tasksAPI } from '../services/api';
 import { 
   Users, 
   FolderOpen, 
@@ -34,21 +35,20 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch projects
-      const projectsResponse = await fetch('/api/v1/projects/', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const projects = await projectsResponse.json();
-      
-      // Fetch tasks
-      const tasksResponse = await fetch('/api/v1/tasks/', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const tasks = await tasksResponse.json();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('No authentication token found');
+        return;
+      }
+
+      // Fetch projects and tasks using the API service
+      const [projectsResponse, tasksResponse] = await Promise.all([
+        projectsAPI.getProjects(),
+        tasksAPI.getTasks()
+      ]);
+
+      const projects = projectsResponse.data;
+      const tasks = tasksResponse.data;
 
       // Calculate stats
       const completedTasks = tasks.filter(task => task.status === 'done').length;
@@ -64,7 +64,8 @@ const Dashboard = () => {
       setRecentProjects(projects.slice(0, 3));
       setRecentTasks(tasks.slice(0, 5));
     } catch (error) {
-      toast.error('Failed to load dashboard data');
+      console.error('Dashboard data error:', error);
+      toast.error('Failed to load dashboard data. Please try again.');
     } finally {
       setIsLoading(false);
     }
