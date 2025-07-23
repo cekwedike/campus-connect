@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import get_password_hash, verify_password
@@ -15,17 +16,36 @@ class UserService:
         return verify_password(plain_password, hashed_password)
 
     def create_user(self, user: UserCreate) -> User:
-        hashed_password = self.get_password_hash(user.password)
-        db_user = User(
-            email=user.email,
-            username=user.username,
-            full_name=user.full_name,
-            hashed_password=hashed_password,
-        )
-        self.db.add(db_user)
-        self.db.commit()
-        self.db.refresh(db_user)
-        return db_user
+        # Check for existing user with same email or username
+        if self.get_user_by_email(user.email):
+            raise ValueError("Email already registered")
+        
+        if self.get_user_by_username(user.username):
+            raise ValueError("Username already taken")
+        
+        try:
+            hashed_password = self.get_password_hash(user.password)
+            db_user = User(
+                email=user.email,
+                username=user.username,
+                full_name=user.full_name,
+                hashed_password=hashed_password,
+            )
+            self.db.add(db_user)
+            self.db.commit()
+            self.db.refresh(db_user)
+            return db_user
+        except IntegrityError as e:
+            self.db.rollback()
+            if "email" in str(e).lower():
+                raise ValueError("Email already registered")
+            elif "username" in str(e).lower():
+                raise ValueError("Username already taken")
+            else:
+                raise ValueError("User creation failed")
+        except Exception as e:
+            self.db.rollback()
+            raise ValueError(f"User creation failed: {str(e)}")
 
     def get_users(self, skip: int = 0, limit: int = 100):
         return self.db.query(User).offset(skip).limit(limit).all()

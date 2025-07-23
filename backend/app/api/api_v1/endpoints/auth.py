@@ -17,18 +17,18 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     """Register a new user"""
     user_service = UserService(db)
 
-    # Check if user already exists
-    if user_service.get_user_by_email(user.email):
+    try:
+        return user_service.create_user(user)
+    except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=str(e)
         )
-
-    if user_service.get_user_by_username(user.username):
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Registration failed. Please try again."
         )
-
-    return user_service.create_user(user)
 
 
 @router.post("/login", response_model=LoginResponse)

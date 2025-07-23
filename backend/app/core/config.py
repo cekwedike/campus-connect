@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "CampusConnect"
 
     # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost/campusconnect"
+    DATABASE_URL: str = "postgresql://postgres:postgres@db/campus_connect"
 
     # Security
     SECRET_KEY: str = "your-secret-key-here"
