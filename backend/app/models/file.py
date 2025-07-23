@@ -20,4 +20,4 @@ class File(Base):
 
     # Relationships
     project = relationship("Project", back_populates="files")
-    user = relationship("User", back_populates="uploaded_files") 
+    user = relationship("User", back_populates="uploaded_files")

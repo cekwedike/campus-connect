@@ -1,11 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.schemas.project import Project
-from app.schemas.task import Task
-from app.schemas.user import User
 from app.services.project_service import ProjectService
 from app.services.task_service import TaskService
 from app.services.user_service import UserService

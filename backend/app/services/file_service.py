@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from fastapi import UploadFile, HTTPException
 from app.models.file import File
 from app.models.project import Project
-from app.core.config import settings
 
 UPLOAD_DIR = Path("uploads")
 
@@ -29,7 +28,6 @@ class FileService:
             raise HTTPException(status_code=400, detail="File too large")
 
         # Create unique filename
-        file_extension = Path(file.filename).suffix
         unique_filename = f"{project_id}_{user_id}_{file.filename}"
         file_path = UPLOAD_DIR / unique_filename
 
