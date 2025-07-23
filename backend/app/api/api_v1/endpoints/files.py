@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.schemas.file import File as FileSchema, FileCreate
+from app.schemas.file import File as FileSchema
 from app.services.file_service import FileService
 from app.models.user import User
 
