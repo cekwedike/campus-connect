@@ -1,211 +1,300 @@
-# CampusConnect: Simplifying Student Collaboration
+# CampusConnect - Student Collaboration Platform
 
-## Project Overview
+A modern, full-stack web application for university student collaboration, built with React, FastAPI, and PostgreSQL.
 
-CampusConnect is a centralized web platform for university students to find teammates, organize group projects, and track collaboration progress. It helps students avoid scattered communication by providing a clean, project-focused interface with tools for task assignment, deadlines, and document sharing.
+## 🚀 Features
 
-## Features
+- **User Authentication**: Secure registration and login system
+- **Project Management**: Create and manage collaborative projects
+- **Task Management**: Organize tasks within projects
+- **File Sharing**: Upload and share files within projects
+- **Real-time Search**: Global search across projects, tasks, and users
+- **Responsive Design**: Modern UI that works on all devices
+- **PWA Support**: Progressive Web App capabilities
 
-### ✅ Implemented Features
-- **User Authentication**: JWT-based authentication with secure password hashing
-- **User Registration & Login**: Complete user management system
-- **Project Management**: Create, view, update, and delete projects
-- **Task Management**: Create tasks with status tracking (TODO, IN_PROGRESS, REVIEW, DONE)
-- **Project Membership**: Add team members with role-based access (Owner, Admin, Member, Viewer)
-- **Dashboard**: Overview of projects, tasks, and statistics
-- **Responsive UI**: Modern, mobile-friendly interface built with React and Tailwind CSS
-- **API Documentation**: Auto-generated Swagger/OpenAPI documentation
-- **Database Migrations**: Alembic-based migration system
-- **Docker Support**: Complete containerization for easy deployment
+## 🏗️ Architecture
 
-### 🚧 Planned Features
-- **File Sharing**: Share files and documents in project-specific threads
-- **Real-time Collaboration**: WebSocket-based real-time updates
-- **Comments & Discussions**: Thread-based discussions on tasks and projects
-- **Notifications**: Email and in-app notifications
-- **Advanced Search**: Search across projects, tasks, and team members
-- **Calendar Integration**: Sync with external calendar applications
+- **Frontend**: React 18 with TailwindCSS
+- **Backend**: FastAPI with Python 3.11
+- **Database**: PostgreSQL 13
+- **Authentication**: JWT tokens
+- **Containerization**: Docker & Docker Compose
+- **Cloud**: AWS ECS, RDS, ECR, ALB
 
-## Tech Stack
+## 📋 Prerequisites
 
-- **Backend**: Python (FastAPI) + PostgreSQL
-- **Frontend**: React.js + TailwindCSS
-- **DevOps**: Docker, GitHub Actions, AWS EC2
-- **Database**: PostgreSQL
+- Docker & Docker Compose
+- Node.js 16+ (for local development)
+- Python 3.11+ (for local development)
+- AWS CLI (for cloud deployment)
+- Terraform (for infrastructure)
 
-## Project Structure
+## 🐳 Quick Start with Docker
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd campus-connect
+```
+
+### 2. Set Up Environment Variables
+```bash
+cp env.example .env
+# Edit .env with your configuration
+```
+
+### 3. Start the Application
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### 4. Access the Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+
+### 5. Create Initial User
+```bash
+# Access backend container
+docker-compose exec backend python
+
+# Create a test user
+from app.core.database import SessionLocal
+from app.models.user import User
+from app.core.security import get_password_hash
+
+db = SessionLocal()
+user = User(
+    username='admin',
+    email='admin@example.com',
+    full_name='Administrator',
+    hashed_password=get_password_hash('password123')
+)
+db.add(user)
+db.commit()
+print('User created successfully')
+```
+
+## ☁️ Cloud Deployment
+
+### Prerequisites
+1. AWS Account with appropriate permissions
+2. AWS CLI configured
+3. Terraform installed
+4. Docker installed
+
+### 1. Configure AWS
+```bash
+aws configure
+# Enter your AWS Access Key ID, Secret Access Key, and region
+```
+
+### 2. Set Up Terraform Variables
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your values
+```
+
+### 3. Deploy Infrastructure
+```bash
+# Initialize Terraform
+terraform init
+
+# Plan deployment
+terraform plan
+
+# Apply changes
+terraform apply
+```
+
+### 4. Build and Push Docker Images
+```bash
+# Make deployment script executable
+chmod +x scripts/deploy.sh
+
+# Set environment variables
+export ECR_REGISTRY=$(terraform output -raw ecr_registry)
+export AWS_REGION=us-east-1
+
+# Deploy images
+./scripts/deploy.sh
+```
+
+### 5. Update ECS Services
+```bash
+# Get ECS cluster and service names
+aws ecs list-clusters
+aws ecs list-services --cluster campus-connect-cluster
+
+# Force new deployment
+aws ecs update-service --cluster campus-connect-cluster --service backend-service --force-new-deployment
+aws ecs update-service --cluster campus-connect-cluster --service frontend-service --force-new-deployment
+```
+
+### 6. Access Your Application
+```bash
+# Get the ALB DNS name
+terraform output alb_dns_name
+
+# Your application will be available at:
+# Frontend: http://<alb-dns-name>
+# Backend: http://<alb-dns-name>/api
+```
+
+## 🛠️ Development Setup
+
+### Frontend Development
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### Backend Development
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Database Setup
+```bash
+# Create database tables
+cd backend
+python -c "from app.core.database import engine; from app.models import *; from app.core.database import Base; Base.metadata.create_all(bind=engine)"
+```
+
+## 🧪 Testing
+
+### Run All Tests
+```bash
+docker-compose exec backend python -m pytest tests/ -v
+```
+
+### Run Specific Tests
+```bash
+# Auth tests
+docker-compose exec backend python -m pytest tests/test_auth.py -v
+
+# API tests
+docker-compose exec backend python -m pytest tests/test_main.py -v
+```
+
+## 📁 Project Structure
 
 ```
 campus-connect/
 ├── backend/                 # FastAPI backend
 │   ├── app/
 │   │   ├── api/            # API routes
-│   │   ├── core/           # Configuration and utilities
+│   │   ├── core/           # Core configuration
 │   │   ├── models/         # Database models
 │   │   ├── schemas/        # Pydantic schemas
 │   │   └── services/       # Business logic
 │   ├── tests/              # Backend tests
-│   ├── requirements.txt    # Python dependencies
-│   └── Dockerfile          # Backend container
+│   ├── Dockerfile          # Backend container
+│   └── requirements.txt    # Python dependencies
 ├── frontend/               # React frontend
 │   ├── src/
 │   │   ├── components/     # React components
+│   │   ├── contexts/       # React contexts
 │   │   ├── pages/          # Page components
-│   │   ├── services/       # API services
-│   │   └── utils/          # Utility functions
-│   ├── package.json        # Node dependencies
-│   └── Dockerfile          # Frontend container
-├── docker-compose.yml      # Local development setup
-├── .github/                # GitHub Actions workflows
-└── README.md               # This file
+│   │   └── services/       # API services
+│   ├── public/             # Static files
+│   ├── Dockerfile          # Frontend container
+│   └── package.json        # Node dependencies
+├── terraform/              # Infrastructure as Code
+│   ├── modules/            # Terraform modules
+│   ├── main.tf             # Main configuration
+│   └── variables.tf        # Variable definitions
+├── scripts/                # Deployment scripts
+├── docker-compose.yml      # Local development
+├── docker-compose.prod.yml # Production deployment
+└── README.md              # This file
 ```
 
-## Local Development Setup
+## 🔧 Configuration
 
-### Prerequisites
+### Environment Variables
 
-- Python 3.9+
-- Node.js 16+
-- Docker and Docker Compose
-- PostgreSQL (or use Docker)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POSTGRES_DB` | Database name | `campusconnect` |
+| `POSTGRES_USER` | Database user | `postgres` |
+| `POSTGRES_PASSWORD` | Database password | `postgres` |
+| `SECRET_KEY` | JWT secret key | `your-secret-key-here` |
+| `REACT_APP_API_URL` | Backend API URL | `http://localhost:8000` |
 
-### Quick Start with Docker (Recommended)
+### Production Configuration
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/campus-connect.git
-   cd campus-connect
-   ```
+For production deployment, ensure you:
+1. Use strong, unique passwords
+2. Set up SSL/TLS certificates
+3. Configure proper CORS origins
+4. Use managed database services
+5. Set up monitoring and logging
 
-2. Start all services:
-   ```bash
-   docker-compose up -d
-   ```
+## 🚀 API Endpoints
 
-3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
+### Authentication
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/token` - OAuth2 token
 
-4. Create your first account:
-   - Go to http://localhost:3000/register
-   - Create a new account
-   - Start using the application!
+### Users
+- `GET /api/v1/users` - List users
+- `GET /api/v1/users/{id}` - Get user details
+- `PUT /api/v1/users/{id}` - Update user
 
-### Manual Setup
+### Projects
+- `GET /api/v1/projects` - List projects
+- `POST /api/v1/projects` - Create project
+- `GET /api/v1/projects/{id}` - Get project details
+- `PUT /api/v1/projects/{id}` - Update project
+- `DELETE /api/v1/projects/{id}` - Delete project
 
-#### Backend Setup
+### Tasks
+- `GET /api/v1/tasks` - List tasks
+- `POST /api/v1/tasks` - Create task
+- `GET /api/v1/tasks/{id}` - Get task details
+- `PUT /api/v1/tasks/{id}` - Update task
+- `DELETE /api/v1/tasks/{id}` - Delete task
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+## 🤝 Contributing
 
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 📄 License
 
-4. Set up environment variables:
-   ```bash
-   cp env.example .env
-   # Edit .env with your database credentials
-   ```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-5. Run database migrations:
-   ```bash
-   alembic upgrade head
-   ```
+## 🆘 Support
 
-6. Start the development server:
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+For support and questions:
+- Create an issue in the repository
+- Check the API documentation at `/docs`
+- Review the test files for usage examples
 
-#### Frontend Setup
+## 🔄 CI/CD
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+The project includes GitHub Actions workflows for:
+- Automated testing
+- Docker image building
+- Security scanning
+- Deployment to staging/production
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+---
 
-3. Set up environment variables:
-   ```bash
-   cp env.example .env
-   ```
-
-4. Start the development server:
-   ```bash
-   npm start
-   ```
-
-## Testing
-
-### Backend Tests
-```bash
-cd backend
-pytest
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
-
-## API Documentation
-
-Once the backend is running, visit:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
-## Contributing
-
-1. Create a feature branch from `develop`
-2. Make your changes
-3. Write/update tests
-4. Ensure CI passes
-5. Create a pull request
-
-## License
-
-This project is for educational purposes as part of the Advanced DevOps Course.
-
-## Project Board
-
-[Link to GitHub Project Board](https://github.com/cekwedike/campus-connect/projects/1)
-
-## Repository
-
-[GitHub Repository](https://github.com/cekwedike/campus-connect)
-
-## CI/CD Pipeline
-
-This project uses GitHub Actions for continuous integration. The pipeline includes:
-
-- **Linting**: Code quality checks with flake8 and black
-- **Testing**: Unit tests with pytest and coverage reporting
-- **Security**: Vulnerability scanning with safety and bandit
-- **Build**: Docker image building for containerization
-
-The pipeline runs on:
-- Every push to `main` and `develop` branches
-- Every pull request to `main` and `develop` branches
-
-## Branch Protection
-
-The `main` branch is protected with the following rules:
-- Requires pull request reviews before merging
-- Requires status checks to pass before merging
-- Requires up-to-date branches before merging 
+**Built with ❤️ for student collaboration** 
