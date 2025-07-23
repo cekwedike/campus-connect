@@ -1,7 +1,7 @@
-variable "aws_region" {
-  description = "AWS region"
+variable "location" {
+  description = "Azure region"
   type        = string
-  default     = "us-east-1"
+  default     = "East US"
 }
 
 variable "environment" {
@@ -10,16 +10,10 @@ variable "environment" {
   default     = "production"
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "availability_zones" {
-  description = "Availability zones"
+variable "vnet_address_space" {
+  description = "Address space for Virtual Network"
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b"]
+  default     = ["10.0.0.0/16"]
 }
 
 variable "db_name" {
@@ -40,10 +34,10 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "db_instance_class" {
-  description = "RDS instance class"
+variable "db_sku_name" {
+  description = "Azure Database for PostgreSQL SKU"
   type        = string
-  default     = "db.t3.micro"
+  default     = "B_Gen5_1"
 }
 
 variable "secret_key" {

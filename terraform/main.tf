@@ -1,22 +1,23 @@
-# Configure AWS Provider
+# Configure Azure Provider
 terraform {
   required_version = ">= 1.0"
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0"
     }
   }
   
-  backend "s3" {
-    bucket = "campus-connect-terraform-state"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
+  backend "azurerm" {
+    resource_group_name  = "campus-connect-terraform-rg"
+    storage_account_name = "campusconnecttfstate"
+    container_name       = "terraform-state"
+    key                  = "terraform.tfstate"
   }
 }
 
-provider "aws" {
-  region = var.aws_region
+provider "azurerm" {
+  features {}
   
   default_tags {
     tags = {
@@ -27,67 +28,76 @@ provider "aws" {
   }
 }
 
-# VPC and Networking
-module "vpc" {
-  source = "./modules/vpc"
-  
-  environment = var.environment
-  vpc_cidr    = var.vpc_cidr
-  azs         = var.availability_zones
+# Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = "${var.environment}-campus-connect-rg"
+  location = var.location
 }
 
-# ECR Repositories
-module "ecr" {
-  source = "./modules/ecr"
+# Virtual Network
+module "vnet" {
+  source = "./modules/vnet"
   
   environment = var.environment
+  location    = var.location
+  resource_group_name = azurerm_resource_group.main.name
+  address_space       = var.vnet_address_space
+}
+
+# Container Registry
+module "acr" {
+  source = "./modules/acr"
+  
+  environment = var.environment
+  location    = var.location
+  resource_group_name = azurerm_resource_group.main.name
   repositories = [
     "campus-connect-backend",
     "campus-connect-frontend"
   ]
 }
 
-# RDS Database
-module "rds" {
-  source = "./modules/rds"
+# Database
+module "database" {
+  source = "./modules/database"
   
-  environment        = var.environment
-  vpc_id            = module.vpc.vpc_id
-  private_subnets   = module.vpc.private_subnets
-  db_name           = var.db_name
-  db_username       = var.db_username
-  db_password       = var.db_password
-  db_instance_class = var.db_instance_class
-}
-
-# ECS Cluster and Services
-module "ecs" {
-  source = "./modules/ecs"
+  environment = var.environment
+  location    = var.location
+  resource_group_name = azurerm_resource_group.main.name
+  subnet_id          = module.vnet.private_subnet_id
   
-  environment      = var.environment
-  vpc_id          = module.vpc.vpc_id
-  public_subnets  = module.vpc.public_subnets
-  private_subnets = module.vpc.private_subnets
-  
-  backend_image = "${module.ecr.repository_urls["campus-connect-backend"]}:latest"
-  frontend_image = "${module.ecr.repository_urls["campus-connect-frontend"]}:latest"
-  
-  db_endpoint = module.rds.db_endpoint
   db_name     = var.db_name
   db_username = var.db_username
   db_password = var.db_password
-  
-  secret_key = var.secret_key
+  db_sku_name = var.db_sku_name
 }
 
-# Application Load Balancer
-module "alb" {
-  source = "./modules/alb"
+# Container Apps
+module "container_apps" {
+  source = "./modules/container_apps"
   
-  environment     = var.environment
-  vpc_id         = module.vpc.vpc_id
-  public_subnets = module.vpc.public_subnets
+  environment = var.environment
+  location    = var.location
+  resource_group_name = azurerm_resource_group.main.name
   
-  backend_target_group_arn = module.ecs.backend_target_group_arn
-  frontend_target_group_arn = module.ecs.frontend_target_group_arn
+  backend_image = "${module.acr.login_server}/campus-connect-backend:latest"
+  frontend_image = "${module.acr.login_server}/campus-connect-frontend:latest"
+  
+  db_connection_string = module.database.connection_string
+  secret_key = var.secret_key
+  
+  depends_on = [module.acr, module.database]
+}
+
+# Application Gateway
+module "app_gateway" {
+  source = "./modules/app_gateway"
+  
+  environment = var.environment
+  location    = var.location
+  resource_group_name = azurerm_resource_group.main.name
+  subnet_id          = module.vnet.public_subnet_id
+  
+  backend_url = module.container_apps.backend_url
+  frontend_url = module.container_apps.frontend_url
 } 
