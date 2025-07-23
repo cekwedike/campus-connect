@@ -75,7 +75,7 @@ const Register = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-white/50" />
+                  <User className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('username', { 
@@ -99,7 +99,7 @@ const Register = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <UserCheck className="h-5 w-5 text-white/50" />
+                  <UserCheck className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('full_name', { required: 'Full name is required' })}
@@ -120,7 +120,7 @@ const Register = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-white/50" />
+                  <Mail className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('email', { 
@@ -147,7 +147,7 @@ const Register = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-white/50" />
+                  <Lock className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('password', { 
@@ -202,7 +202,7 @@ const Register = () => {
               <div className="w-full border-t border-white/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-transparent text-white/60">Already have an account?</span>
+              <span className="px-2 bg-transparent text-gray-600">Already have an account?</span>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ const Register = () => {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-white/60 text-sm">
+          <p className="text-gray-600 text-sm">
             © 2024 CampusConnect. Empowering student collaboration.
           </p>
         </div>
