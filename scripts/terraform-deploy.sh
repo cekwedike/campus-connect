@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CampusConnect Terraform Deployment Script
+# CampusConnect Azure Terraform Deployment Script
 set -e
 
 # Colors for output
@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 TF_DIR="./terraform"
 TF_VARS_FILE="terraform.tfvars"
 
-echo -e "${GREEN}🏗️  Starting CampusConnect Infrastructure Deployment${NC}"
+echo -e "${GREEN}🏗️  Starting CampusConnect Azure Infrastructure Deployment${NC}"
 
 # Check if Terraform is installed
 if ! command -v terraform &> /dev/null; then
@@ -21,9 +21,9 @@ if ! command -v terraform &> /dev/null; then
     exit 1
 fi
 
-# Check if AWS CLI is configured
-if ! aws sts get-caller-identity &> /dev/null; then
-    echo -e "${RED}❌ AWS CLI is not configured. Please run 'aws configure' first.${NC}"
+# Check if Azure CLI is configured
+if ! az account show &> /dev/null; then
+    echo -e "${RED}❌ Azure CLI is not configured. Please run 'az login' first.${NC}"
     exit 1
 fi
 

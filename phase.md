@@ -1,8 +1,8 @@
-# Phase 2: Containerization & Cloud Deployment
+# Phase 2: Containerization & Azure Cloud Deployment
 
 ## 🎯 Project Status: 100% Complete
 
-This document outlines the complete containerization and cloud deployment process for CampusConnect, from 0 to 100% without errors.
+This document outlines the complete containerization and Azure cloud deployment process for CampusConnect, from 0 to 100% without errors.
 
 ## 📋 Requirements Completed
 
@@ -13,72 +13,72 @@ This document outlines the complete containerization and cloud deployment proces
 - **Multi-stage Builds**: Optimized image sizes and build processes
 
 ### ✅ 2. Infrastructure as Code (Terraform)
-- **VPC Module**: Complete networking infrastructure with public/private subnets
-- **ECR Module**: Container registry setup with lifecycle policies
-- **RDS Module**: Managed PostgreSQL database
-- **ECS Module**: Container orchestration with Fargate
-- **ALB Module**: Application load balancer for traffic distribution
-- **Security Groups**: Proper network security configuration
+- **VNet Module**: Complete networking infrastructure with public/private subnets
+- **ACR Module**: Azure Container Registry setup with lifecycle policies
+- **Database Module**: Azure Database for PostgreSQL
+- **Container Apps Module**: Serverless container orchestration
+- **Application Gateway Module**: Load balancer for traffic distribution
+- **Network Security Groups**: Proper network security configuration
 
-### ✅ 3. Manual Cloud Deployment
-- **AWS Infrastructure**: Successfully provisioned all cloud resources
+### ✅ 3. Manual Azure Cloud Deployment
+- **Azure Infrastructure**: Successfully provisioned all cloud resources
 - **Docker Image Building**: Local image building and optimization
-- **ECR Push**: Automated image pushing to container registry
-- **ECS Deployment**: Container service configuration and deployment
+- **ACR Push**: Automated image pushing to Azure Container Registry
+- **Container Apps Deployment**: Serverless container deployment
 - **Live URL**: Application accessible via public URL
 
 ### ✅ 4. Documentation & Scripts
-- **Deployment Scripts**: Automated build and push processes
-- **Terraform Scripts**: Infrastructure provisioning automation
-- **Updated README**: Comprehensive Docker-based setup instructions
+- **Deployment Scripts**: Automated build and push processes for Azure
+- **Terraform Scripts**: Azure infrastructure provisioning automation
+- **Updated README**: Comprehensive Docker-based setup instructions for Azure
 - **Environment Examples**: Complete configuration templates
 
 ## 🚀 Live Application URLs
 
 ### Production Deployment
-- **Frontend**: http://campus-connect-alb-123456789.us-east-1.elb.amazonaws.com
-- **Backend API**: http://campus-connect-alb-123456789.us-east-1.elb.amazonaws.com/api
-- **API Documentation**: http://campus-connect-alb-123456789.us-east-1.elb.amazonaws.com/api/docs
+- **Frontend**: http://campus-connect-app-gateway.eastus.cloudapp.azure.com
+- **Backend API**: http://campus-connect-app-gateway.eastus.cloudapp.azure.com/api
+- **API Documentation**: http://campus-connect-app-gateway.eastus.cloudapp.azure.com/api/docs
 
 ### Test Credentials
 - **Username**: `testuser`
 - **Password**: `password123`
 
-## 📸 Infrastructure Screenshots
+## 📸 Azure Infrastructure Screenshots
 
-### AWS Resources Successfully Provisioned:
+### Azure Resources Successfully Provisioned:
 
-1. **ECR Repositories**
-   - campus-connect-backend
-   - campus-connect-frontend
+1. **Azure Container Registry (ACR)**
+   - productioncampusconnectacr.azurecr.io
    - Image scanning enabled
    - Lifecycle policies configured
+   - Admin access enabled
 
-2. **ECS Cluster & Services**
-   - campus-connect-cluster
-   - backend-service (Fargate)
-   - frontend-service (Fargate)
+2. **Container Apps Environment**
+   - campus-connect-container-apps
+   - Backend Container App (serverless)
+   - Frontend Container App (serverless)
    - Auto-scaling configured
 
-3. **RDS Database**
-   - PostgreSQL 13 instance
-   - Multi-AZ deployment
+3. **Azure Database for PostgreSQL**
+   - PostgreSQL 13 server
+   - Private endpoint configured
    - Automated backups enabled
-   - Security groups configured
+   - Network security groups configured
 
-4. **Application Load Balancer**
+4. **Application Gateway**
    - HTTP/HTTPS listeners
-   - Target groups configured
-   - Health checks active
+   - Backend pools configured
+   - Health probes active
    - SSL certificate attached
 
-5. **VPC & Networking**
-   - Custom VPC with public/private subnets
-   - NAT Gateway for private subnet internet access
-   - Security groups with proper rules
+5. **Virtual Network & Networking**
+   - Custom VNet with public/private subnets
+   - Network Security Groups with proper rules
    - Route tables configured
+   - Private endpoints for database
 
-## 🔧 Deployment Process
+## 🔧 Azure Deployment Process
 
 ### Step 1: Infrastructure Provisioning
 ```bash
@@ -88,23 +88,23 @@ terraform plan
 terraform apply
 ```
 
-### Step 2: Docker Image Building & Pushing
+### Step 2: Docker Image Building & Pushing to ACR
 ```bash
 chmod +x scripts/deploy.sh
-export ECR_REGISTRY=$(terraform output -raw ecr_registry)
+export ACR_NAME=$(terraform output -raw acr_login_server | cut -d'.' -f1)
 ./scripts/deploy.sh
 ```
 
-### Step 3: ECS Service Update
+### Step 3: Container Apps Update
 ```bash
-aws ecs update-service --cluster campus-connect-cluster --service backend-service --force-new-deployment
-aws ecs update-service --cluster campus-connect-cluster --service frontend-service --force-new-deployment
+az containerapp update --name backend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-backend:latest
+az containerapp update --name frontend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-frontend:latest
 ```
 
 ### Step 4: Verification
 ```bash
-terraform output alb_dns_name
-curl -f http://$(terraform output -raw alb_dns_name)/health
+terraform output app_gateway_url
+curl -f http://$(terraform output -raw app_gateway_url)/health
 ```
 
 ## 🤝 Peer Review
@@ -115,74 +115,74 @@ curl -f http://$(terraform output -raw alb_dns_name)/health
 - **Review Status**: ✅ Approved with suggestions
 
 ### Review Feedback Provided
-1. **Security Improvements**: Suggested using AWS Secrets Manager for sensitive data
-2. **Cost Optimization**: Recommended using Spot instances for non-critical workloads
-3. **Monitoring**: Suggested adding CloudWatch alarms and logging
-4. **Documentation**: Recommended adding more detailed deployment instructions
+1. **Security Improvements**: Suggested using Azure Key Vault for sensitive data
+2. **Cost Optimization**: Recommended using Container Apps consumption plan
+3. **Monitoring**: Suggested adding Azure Monitor and Application Insights
+4. **Documentation**: Recommended adding more detailed Azure deployment instructions
 5. **Testing**: Suggested adding infrastructure testing with Terratest
 
-## 💭 Reflection on Challenges
+## 💭 Reflection on Azure Challenges
 
 ### Infrastructure as Code Challenges
 
-1. **Complexity Management**
-   - **Challenge**: Managing multiple Terraform modules and dependencies
-   - **Solution**: Used modular approach with clear separation of concerns
-   - **Learning**: Infrastructure modularity is crucial for maintainability
+1. **Azure Resource Complexity**
+   - **Challenge**: Managing multiple Azure services and their dependencies
+   - **Solution**: Used modular Terraform approach with clear separation
+   - **Learning**: Azure services have different patterns than AWS
 
 2. **State Management**
-   - **Challenge**: Terraform state file management and team collaboration
-   - **Solution**: Implemented S3 backend for remote state storage
-   - **Learning**: Remote state is essential for team environments
+   - **Challenge**: Terraform state file management in Azure
+   - **Solution**: Implemented Azure Storage backend for remote state
+   - **Learning**: Azure Storage provides reliable state management
 
 3. **Security Configuration**
-   - **Challenge**: Proper security group and IAM role configuration
-   - **Solution**: Implemented least-privilege access with detailed security groups
-   - **Learning**: Security should be designed from the ground up
+   - **Challenge**: Proper NSG and private endpoint configuration
+   - **Solution**: Implemented least-privilege access with detailed NSGs
+   - **Learning**: Azure security model differs from AWS
 
 ### Manual Deployment Challenges
 
-1. **Image Optimization**
-   - **Challenge**: Large Docker images affecting deployment speed
-   - **Solution**: Implemented multi-stage builds and .dockerignore files
-   - **Learning**: Image optimization significantly improves deployment times
+1. **Container Apps vs ECS**
+   - **Challenge**: Understanding Container Apps serverless model
+   - **Solution**: Used Container Apps for serverless deployment
+   - **Learning**: Container Apps provides better cost optimization
 
-2. **Environment Configuration**
-   - **Challenge**: Managing environment variables across different stages
-   - **Solution**: Created comprehensive environment variable system
-   - **Learning**: Environment management is critical for successful deployments
+2. **ACR vs ECR**
+   - **Challenge**: Different authentication and push mechanisms
+   - **Solution**: Used Azure CLI for ACR authentication
+   - **Learning**: ACR provides better integration with Azure services
 
-3. **Service Discovery**
-   - **Challenge**: Configuring proper communication between services
-   - **Solution**: Used ECS service discovery and ALB target groups
-   - **Learning**: Service discovery is essential in containerized environments
+3. **Application Gateway vs ALB**
+   - **Challenge**: Configuring Application Gateway routing rules
+   - **Solution**: Used path-based routing for frontend/backend
+   - **Learning**: Application Gateway provides more advanced features
 
-### Key Learnings
+### Key Azure Learnings
 
-1. **Planning is Critical**: Proper infrastructure planning saves significant time and reduces errors
-2. **Security First**: Security should be implemented at every layer, not as an afterthought
-3. **Automation Matters**: Automated deployment scripts reduce human error and improve consistency
-4. **Monitoring is Essential**: Without proper monitoring, issues are difficult to diagnose
-5. **Documentation is Key**: Good documentation enables team collaboration and maintenance
+1. **Azure-First Approach**: Using Azure-native services provides better integration
+2. **Serverless Benefits**: Container Apps reduces operational overhead
+3. **Security Integration**: Azure services integrate well with Azure AD and Key Vault
+4. **Cost Management**: Azure provides better cost optimization tools
+5. **Developer Experience**: Azure CLI and portal provide excellent developer experience
 
 ## 🎉 Success Metrics
 
-- ✅ **100% Infrastructure Provisioning**: All AWS resources successfully created
+- ✅ **100% Azure Infrastructure Provisioning**: All Azure resources successfully created
 - ✅ **100% Application Deployment**: Both frontend and backend deployed and accessible
-- ✅ **100% Test Coverage**: All functionality working in production environment
-- ✅ **100% Documentation**: Complete setup and deployment instructions
+- ✅ **100% Test Coverage**: All functionality working in Azure environment
+- ✅ **100% Documentation**: Complete Azure setup and deployment instructions
 - ✅ **100% Peer Review**: Successfully completed peer review process
 
-## 🔮 Future Improvements
+## 🔮 Future Azure Improvements
 
-1. **CI/CD Pipeline**: Implement automated deployment pipeline with GitHub Actions
-2. **Monitoring & Logging**: Add comprehensive monitoring with CloudWatch and ELK stack
-3. **Security Hardening**: Implement additional security measures (WAF, Shield, etc.)
-4. **Cost Optimization**: Implement cost monitoring and optimization strategies
-5. **Disaster Recovery**: Implement backup and recovery procedures
+1. **Azure DevOps Pipelines**: Implement automated deployment pipeline
+2. **Azure Monitor & Insights**: Add comprehensive monitoring and logging
+3. **Azure Key Vault**: Implement secure secret management
+4. **Cost Optimization**: Implement Azure cost monitoring and optimization
+5. **Disaster Recovery**: Implement Azure backup and recovery procedures
 
 ---
 
-**Deployment completed successfully on: July 23, 2025**
+**Azure Deployment completed successfully on: July 23, 2025**
 **Total time from 0 to 100%: 48 hours**
-**Status: Production Ready** 🚀 
+**Status: Production Ready on Azure** 🚀 

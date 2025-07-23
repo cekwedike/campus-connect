@@ -19,14 +19,14 @@ A modern, full-stack web application for university student collaboration, built
 - **Database**: PostgreSQL 13
 - **Authentication**: JWT tokens
 - **Containerization**: Docker & Docker Compose
-- **Cloud**: AWS ECS, RDS, ECR, ALB
+- **Cloud**: Azure Container Apps, Azure Database for PostgreSQL, ACR, Application Gateway
 
 ## 📋 Prerequisites
 
 - Docker & Docker Compose
 - Node.js 16+ (for local development)
 - Python 3.11+ (for local development)
-- AWS CLI (for cloud deployment)
+- Azure CLI (for cloud deployment)
 - Terraform (for infrastructure)
 
 ## 🐳 Quick Start with Docker
@@ -82,18 +82,18 @@ db.commit()
 print('User created successfully')
 ```
 
-## ☁️ Cloud Deployment
+## ☁️ Azure Cloud Deployment
 
 ### Prerequisites
-1. AWS Account with appropriate permissions
-2. AWS CLI configured
+1. Azure Account with appropriate permissions
+2. Azure CLI installed and configured
 3. Terraform installed
 4. Docker installed
 
-### 1. Configure AWS
+### 1. Configure Azure
 ```bash
-aws configure
-# Enter your AWS Access Key ID, Secret Access Key, and region
+az login
+az account set --subscription <your-subscription-id>
 ```
 
 ### 2. Set Up Terraform Variables
@@ -121,32 +121,31 @@ terraform apply
 chmod +x scripts/deploy.sh
 
 # Set environment variables
-export ECR_REGISTRY=$(terraform output -raw ecr_registry)
-export AWS_REGION=us-east-1
+export ACR_NAME=$(terraform output -raw acr_login_server | cut -d'.' -f1)
+export AZURE_REGION=East US
 
 # Deploy images
 ./scripts/deploy.sh
 ```
 
-### 5. Update ECS Services
+### 5. Update Container Apps
 ```bash
-# Get ECS cluster and service names
-aws ecs list-clusters
-aws ecs list-services --cluster campus-connect-cluster
+# Get Container App names
+az containerapp list --resource-group $(terraform output -raw resource_group_name) --query "[].name" -o tsv
 
-# Force new deployment
-aws ecs update-service --cluster campus-connect-cluster --service backend-service --force-new-deployment
-aws ecs update-service --cluster campus-connect-cluster --service frontend-service --force-new-deployment
+# Update Container Apps with new images
+az containerapp update --name backend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-backend:latest
+az containerapp update --name frontend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-frontend:latest
 ```
 
 ### 6. Access Your Application
 ```bash
-# Get the ALB DNS name
-terraform output alb_dns_name
+# Get the Application Gateway URL
+terraform output app_gateway_url
 
 # Your application will be available at:
-# Frontend: http://<alb-dns-name>
-# Backend: http://<alb-dns-name>/api
+# Frontend: http://<app-gateway-url>
+# Backend: http://<app-gateway-url>/api
 ```
 
 ## 🛠️ Development Setup
@@ -289,7 +288,7 @@ For support and questions:
 
 ## 🔄 CI/CD
 
-The project includes GitHub Actions workflows for:
+The project includes Azure DevOps pipelines for:
 - Automated testing
 - Docker image building
 - Security scanning
