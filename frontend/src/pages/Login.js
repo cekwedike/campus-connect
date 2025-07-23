@@ -72,7 +72,7 @@ const Login = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-white/50" />
+                  <Mail className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('username', { required: 'Username is required' })}
@@ -93,7 +93,7 @@ const Login = () => {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-white/50" />
+                  <Lock className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
                   {...register('password', { required: 'Password is required' })}
@@ -144,7 +144,7 @@ const Login = () => {
               <div className="w-full border-t border-white/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-transparent text-white/60">New to CampusConnect?</span>
+              <span className="px-2 bg-transparent text-gray-600">New to CampusConnect?</span>
             </div>
           </div>
 
@@ -160,7 +160,7 @@ const Login = () => {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-white/60 text-sm">
+          <p className="text-gray-600 text-sm">
             © 2024 CampusConnect. Empowering student collaboration.
           </p>
         </div>
