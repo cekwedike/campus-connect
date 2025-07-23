@@ -15,4 +15,5 @@ httpx==0.25.2
 python-dotenv==1.0.0
 email-validator>=2.0.0
 flake8==6.1.0
-black==23.12.1 
+black==23.12.1
+requests==2.31.0 
