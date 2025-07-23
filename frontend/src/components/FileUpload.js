@@ -3,6 +3,31 @@ import { Upload, X, File, Download, Trash2 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
 
+// Helper functions
+const getFileIcon = (mimeType) => {
+  if (mimeType.startsWith('image/')) {
+    return '🖼️';
+  } else if (mimeType.includes('pdf')) {
+    return '📄';
+  } else if (mimeType.includes('word') || mimeType.includes('document')) {
+    return '📝';
+  } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+    return '📊';
+  } else if (mimeType.includes('zip') || mimeType.includes('rar')) {
+    return '📦';
+  } else {
+    return '📎';
+  }
+};
+
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
 const FileUpload = ({ projectId, onFileUploaded, className = '' }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -70,30 +95,6 @@ const FileUpload = ({ projectId, onFileUploaded, className = '' }) => {
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
-  };
-
-  const getFileIcon = (mimeType) => {
-    if (mimeType.startsWith('image/')) {
-      return '🖼️';
-    } else if (mimeType.includes('pdf')) {
-      return '📄';
-    } else if (mimeType.includes('word') || mimeType.includes('document')) {
-      return '📝';
-    } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
-      return '📊';
-    } else if (mimeType.includes('zip') || mimeType.includes('rar')) {
-      return '📦';
-    } else {
-      return '📎';
-    }
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
