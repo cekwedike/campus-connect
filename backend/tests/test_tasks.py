@@ -72,8 +72,7 @@ def test_create_task(test_db):
         "title": "Test Task",
         "description": "A test task",
         "project_id": project_id,
-        "status": "todo",
-        "due_date": "2024-12-31"
+        "status": "todo"
     }
     response = client.post("/api/v1/tasks/", json=task_data, headers=headers)
     assert response.status_code == 201
