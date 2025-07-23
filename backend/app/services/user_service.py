@@ -19,10 +19,10 @@ class UserService:
         # Check for existing user with same email or username
         if self.get_user_by_email(user.email):
             raise ValueError("Email already registered")
-        
+
         if self.get_user_by_username(user.username):
             raise ValueError("Username already taken")
-        
+
         try:
             hashed_password = self.get_password_hash(user.password)
             db_user = User(
