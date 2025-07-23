@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import SearchBar from './SearchBar';
 import { 
   Users, 
   Menu, 
@@ -8,13 +9,13 @@ import {
   LogOut, 
   User, 
   Settings,
-  Bell,
-  Search
+  Bell
 } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigation = [
@@ -25,6 +26,22 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleSearchResult = (type, item) => {
+    switch (type) {
+      case 'project':
+        navigate(`/projects/${item.id}`);
+        break;
+      case 'task':
+        navigate(`/tasks`);
+        break;
+      case 'user':
+        // Navigate to user profile or show user info
+        break;
+      default:
+        break;
+    }
   };
 
   const isActive = (path) => {
@@ -66,13 +83,8 @@ const Navbar = () => {
           {/* Right side - User menu */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <div className="hidden md:flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-2">
-              <Search className="w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent border-none outline-none text-sm text-gray-600 placeholder-gray-400 w-32"
-              />
+            <div className="hidden md:block w-80">
+              <SearchBar onResultClick={handleSearchResult} />
             </div>
 
             {/* Notifications */}
