@@ -1,7 +1,7 @@
 variable "location" {
-  description = "Azure region"
+  description = "Azure region for resources"
   type        = string
-  default     = "East US"
+  default     = "West US 2"
 }
 
 variable "environment" {
@@ -35,7 +35,7 @@ variable "db_password" {
 }
 
 variable "db_sku_name" {
-  description = "Azure Database for PostgreSQL SKU"
+  description = "Database SKU name"
   type        = string
   default     = "B_Gen5_1"
 }

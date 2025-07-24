@@ -1,6 +1,9 @@
 # Fix Database Connection Issue
 Write-Host "🔧 Fixing Database Connection Issue" -ForegroundColor Yellow
 
+# Secure password - change this to your own strong password
+$DB_PASSWORD = "YourStrongPassword123!"
+
 # Option 1: Create a simple Azure Database for PostgreSQL (Basic tier)
 Write-Host "Creating Azure Database for PostgreSQL..." -ForegroundColor Green
 
@@ -10,7 +13,7 @@ az postgres flexible-server create `
     --name campus-connect-db `
     --location "Central US" `
     --admin-user postgres `
-    --admin-password "Enechi_1206" `
+    --admin-password $DB_PASSWORD `
     --sku-name Standard_B1ms `
     --version 14 `
     --storage-size 32 `
@@ -31,7 +34,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Database FQDN: $DB_FQDN" -ForegroundColor Cyan
     
     # Update backend with correct database URL
-    $DATABASE_URL = "postgresql://postgres:Enechi_1206@$DB_FQDN:5432/campusconnect"
+    $DATABASE_URL = "postgresql://postgres:$DB_PASSWORD@$DB_FQDN:5432/campusconnect"
     
     Write-Host "Updating backend with new database URL..." -ForegroundColor Yellow
     az containerapp update `

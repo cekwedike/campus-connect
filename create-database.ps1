@@ -1,6 +1,9 @@
 # Create PostgreSQL Database for Azure for Students Subscription
 Write-Host "🗄️ Creating PostgreSQL Database for Azure for Students" -ForegroundColor Green
 
+# Secure password - change this to your own strong password
+$DB_PASSWORD = "YourStrongPassword123!"
+
 # Try different regions that work with Azure for Students
 $REGIONS = @("Central US", "East US", "South Central US", "West US 2", "North Central US")
 
@@ -13,7 +16,7 @@ foreach ($REGION in $REGIONS) {
         --name campus-connect-db `
         --location $REGION `
         --admin-user postgres `
-        --admin-password "Enechi_1206" `
+        --admin-password $DB_PASSWORD `
         --sku-name Standard_B1ms `
         --version 14 `
         --storage-size 32 `
@@ -48,7 +51,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Database FQDN: $DB_FQDN" -ForegroundColor Cyan
     
     # Create the connection string
-    $DATABASE_URL = "postgresql://postgres:Enechi_1206@$DB_FQDN:5432/campusconnect"
+    $DATABASE_URL = "postgresql://postgres:$DB_PASSWORD@$DB_FQDN:5432/campusconnect"
     
     Write-Host "Database URL: $DATABASE_URL" -ForegroundColor Cyan
     
@@ -85,7 +88,7 @@ if ($LASTEXITCODE -eq 0) {
         --name campus-connect-db `
         --location "Central US" `
         --admin-user postgres `
-        --admin-password "Enechi_1206" `
+        --admin-password $DB_PASSWORD `
         --sku-name B_Gen5_1 `
         --version 11 `
         --ssl-enforcement Enabled
@@ -104,7 +107,7 @@ if ($LASTEXITCODE -eq 0) {
             --query "fullyQualifiedDomainName" `
             --output tsv
         
-        $DATABASE_URL = "postgresql://postgres:Enechi_1206@$DB_FQDN:5432/campusconnect"
+        $DATABASE_URL = "postgresql://postgres:$DB_PASSWORD@$DB_FQDN:5432/campusconnect"
         
         # Update backend
         az containerapp update `

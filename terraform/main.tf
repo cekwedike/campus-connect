@@ -14,7 +14,7 @@ provider "azurerm" {
 # Resource Group
 resource "azurerm_resource_group" "main" {
   name     = "campus-connect-rg"
-  location = "West US 2"
+  location = var.location
 }
 
 # Container Registry
@@ -39,15 +39,15 @@ resource "azurerm_postgresql_server" "main" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled           = true
 
-  administrator_login          = "postgres"
-  administrator_login_password = "Enechi_1206"
+  administrator_login          = var.db_username
+  administrator_login_password = var.db_password
   version                     = "11"
   ssl_enforcement_enabled     = true
 }
 
 # Database
 resource "azurerm_postgresql_database" "main" {
-  name                = "campusconnect"
+  name                = var.db_name
   resource_group_name = azurerm_resource_group.main.name
   server_name         = azurerm_postgresql_server.main.name
   charset             = "UTF8"

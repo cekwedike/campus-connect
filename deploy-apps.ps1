@@ -7,6 +7,9 @@ $LOCATION = "westus2"
 $ACR_NAME = "campusconnect2024acr"
 $ACR_LOGIN_SERVER = "$ACR_NAME.azurecr.io"
 
+# Secure password - change this to your own strong password
+$DB_PASSWORD = "YourStrongPassword123!"
+
 # Get ACR credentials
 Write-Host "Getting ACR credentials..." -ForegroundColor Yellow
 $ACR_PASSWORD = az acr credential show --name $ACR_NAME --query "passwords[0].value" --output tsv
@@ -30,7 +33,7 @@ az containerapp create `
     --registry-password $ACR_PASSWORD `
     --target-port 8000 `
     --ingress external `
-    --env-vars "DATABASE_URL=postgresql://postgres:Enechi_1206@campus-connect-db.postgres.database.azure.com:5432/campusconnect" "SECRET_KEY=1234567890ekwedike" "ENVIRONMENT=production"
+    --env-vars "DATABASE_URL=postgresql://postgres:$DB_PASSWORD@campus-connect-db.postgres.database.azure.com:5432/campusconnect" "SECRET_KEY=1234567890ekwedike" "ENVIRONMENT=production"
 
 # Get Backend URL
 $BACKEND_URL = az containerapp show --name "campus-connect-backend" --resource-group $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" --output tsv

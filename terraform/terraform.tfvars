@@ -5,7 +5,7 @@ environment = "production"
 # Database Configuration
 db_name = "campusconnect"
 db_username = "postgres"
-db_password = "Enechi_1206"  # Change this to a strong password
+db_password = "YourStrongPassword123!"  # Change this to a strong password
 db_sku_name = "B_Standard_B1ms"
 
 # Application Configuration
