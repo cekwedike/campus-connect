@@ -1,30 +1,29 @@
-output "app_gateway_url" {
-  description = "Application Gateway URL"
-  value       = module.app_gateway.url
+output "resource_group_name" {
+  description = "Resource group name"
+  value       = azurerm_resource_group.main.name
 }
 
 output "backend_url" {
-  description = "Backend API URL"
-  value       = module.container_apps.backend_url
+  description = "Backend container app URL"
+  value       = "https://${azurerm_container_app.backend.latest_revision_fqdn}"
 }
 
 output "frontend_url" {
-  description = "Frontend application URL"
-  value       = module.container_apps.frontend_url
+  description = "Frontend container app URL"
+  value       = "https://${azurerm_container_app.frontend.latest_revision_fqdn}"
 }
 
 output "acr_login_server" {
-  description = "Azure Container Registry login server"
-  value       = module.acr.login_server
+  description = "Container Registry login server"
+  value       = azurerm_container_registry.main.login_server
 }
 
 output "database_server_name" {
   description = "Database server name"
-  value       = module.database.server_name
-  sensitive   = true
+  value       = azurerm_postgresql_flexible_server.main.name
 }
 
-output "resource_group_name" {
-  description = "Resource group name"
-  value       = azurerm_resource_group.main.name
+output "database_server_fqdn" {
+  description = "Database server FQDN"
+  value       = azurerm_postgresql_flexible_server.main.fqdn
 } 
