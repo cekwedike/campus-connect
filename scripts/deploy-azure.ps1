@@ -81,7 +81,8 @@ if ($SubscriptionId) {
 
 # Show current account
 Write-ColorOutput "📋 Current Azure account:" $Yellow
-az account show --query "{Name:name, SubscriptionId:id, TenantId:tenantId}" --output table
+az account show --query "name" --output tsv
+az account show --query "id" --output tsv
 
 # Configure Terraform variables
 Write-ColorOutput "⚙️  Configuring Terraform variables..." $Yellow
