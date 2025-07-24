@@ -30,6 +30,7 @@ EOF
   }
 
   timer_trigger {
+    name     = "daily-cleanup"
     schedule = "0 0 * * *"  # Daily at midnight
   }
 } 

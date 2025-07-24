@@ -19,14 +19,6 @@ terraform {
 
 provider "azurerm" {
   features {}
-  
-  default_tags {
-    tags = {
-      Project     = "campus-connect"
-      Environment = var.environment
-      ManagedBy   = "terraform"
-    }
-  }
 }
 
 # Resource Group

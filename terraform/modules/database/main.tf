@@ -23,7 +23,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "main" {
   name                  = "${var.environment}-dns-link"
   private_dns_zone_name = azurerm_private_dns_zone.main.name
   resource_group_name   = var.resource_group_name
-  virtual_network_id    = data.azurerm_subnet.main.virtual_network_id
+  virtual_network_id    = data.azurerm_virtual_network.main.id
 }
 
 # Private Endpoint
@@ -59,4 +59,16 @@ data "azurerm_subnet" "main" {
   name                 = split("/", var.subnet_id)[10]
   virtual_network_name = split("/", var.subnet_id)[8]
   resource_group_name  = split("/", var.subnet_id)[4]
+}
+
+# Data source for virtual network
+data "azurerm_virtual_network" "main" {
+  name                = data.azurerm_subnet.main.virtual_network_name
+  resource_group_name = data.azurerm_subnet.main.resource_group_name
+}
+
+# Data source for virtual network
+data "azurerm_virtual_network" "main" {
+  name                = data.azurerm_subnet.main.virtual_network_name
+  resource_group_name = data.azurerm_subnet.main.resource_group_name
 } 

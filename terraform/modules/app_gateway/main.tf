@@ -36,12 +36,12 @@ resource "azurerm_application_gateway" "main" {
 
   backend_address_pool {
     name = "backend-pool"
-    fqdn_list = [var.backend_url]
+    fqdn_list = [replace(var.backend_url, "https://", "")]
   }
 
   backend_address_pool {
     name = "frontend-pool"
-    fqdn_list = [var.frontend_url]
+    fqdn_list = [replace(var.frontend_url, "https://", "")]
   }
 
   backend_http_settings {
