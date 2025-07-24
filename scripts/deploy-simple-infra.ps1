@@ -47,8 +47,7 @@ az account show --query "id" --output tsv
 Write-Host "🏗️  Deploying Azure infrastructure..." -ForegroundColor Yellow
 Set-Location terraform
 
-# Copy simplified main file
-Copy-Item "simple-main.tf" "main.tf" -Force
+# Using simplified main.tf file
 
 # Initialize Terraform
 Write-Host "🔧 Initializing Terraform..." -ForegroundColor Yellow
