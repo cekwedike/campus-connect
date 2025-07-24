@@ -1,5 +1,5 @@
 # Azure Configuration
-location = "East US"
+location = "West US 2"
 environment = "production"
 
 # Database Configuration
