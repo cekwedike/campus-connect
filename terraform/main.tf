@@ -8,12 +8,13 @@ terraform {
     }
   }
   
-  backend "azurerm" {
-    resource_group_name  = "campus-connect-terraform-rg"
-    storage_account_name = "campusconnecttfstate"
-    container_name       = "terraform-state"
-    key                  = "terraform.tfstate"
-  }
+  # Using local state for now
+  # backend "azurerm" {
+  #   resource_group_name  = "campus-connect-terraform-rg"
+  #   storage_account_name = "campusconnecttfstate"
+  #   container_name       = "terraform-state"
+  #   key                  = "terraform.tfstate"
+  # }
 }
 
 provider "azurerm" {
