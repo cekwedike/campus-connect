@@ -22,6 +22,10 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "✅ Azure login verified" -ForegroundColor Green
 
+# Navigate to terraform directory
+Write-Host "📁 Navigating to terraform directory..." -ForegroundColor Yellow
+Set-Location terraform
+
 # Run Terraform plan
 Write-Host "📋 Running Terraform plan..." -ForegroundColor Yellow
 & $TERRAFORM plan
@@ -59,6 +63,10 @@ if ($response -eq "y" -or $response -eq "Y") {
     Write-Host "🌐 Frontend URL: $FRONTEND_URL" -ForegroundColor Cyan
     Write-Host "🔗 Backend URL: $BACKEND_URL" -ForegroundColor Cyan
     
+    # Go back to project root
+    Set-Location ..
+    
 } else {
     Write-Host "❌ Deployment cancelled" -ForegroundColor Yellow
+    Set-Location ..
 } 
