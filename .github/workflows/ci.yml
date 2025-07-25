@@ -34,14 +34,16 @@ jobs:
     
     - name: Lint with flake8
       run: |
+        cd backend
         # stop the build if there are Python syntax errors or undefined names
-        flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings
-        flake8 backend --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+        flake8 app/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
     
     - name: Format check with black
       run: |
-        black --check --diff backend/
+        cd backend
+        black --check --diff app/
     
     - name: Run tests
       run: |
@@ -75,16 +77,17 @@ jobs:
     
     - name: Run security checks
       run: |
+        cd backend
         # Check for known security vulnerabilities
         safety check
         # Run bandit for security linting
-        bandit -r backend/app/ -f json -o bandit-report.json || true
+        bandit -r app/ -f json -o bandit-report.json || true
     
     - name: Upload security report
       uses: actions/upload-artifact@v3
       with:
         name: security-report
-        path: bandit-report.json
+        path: backend/bandit-report.json
 
   build:
     runs-on: ubuntu-latest
