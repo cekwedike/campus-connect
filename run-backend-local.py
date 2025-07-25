@@ -1,28 +1,34 @@
+#!/usr/bin/env python3
+"""
+Simple Backend Server for CampusConnect
+Run this locally: python run-backend-local.py
+"""
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import os
-import json
+import uvicorn
 from datetime import datetime, timedelta
 import jwt
+import json
 
 app = FastAPI(
     title="CampusConnect API",
-    description="A simple working backend for university student collaboration",
+    description="Simple backend for university student collaboration",
     version="1.0.0"
 )
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Secret key for JWT
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
+SECRET_KEY = "your-secret-key-here"
 ALGORITHM = "HS256"
 
 # Pydantic models
@@ -36,7 +42,7 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
-# In-memory storage (replace with database later)
+# In-memory storage
 users_db = {}
 projects_db = []
 tasks_db = []
@@ -50,7 +56,6 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 def verify_password(plain_password, hashed_password):
-    # Simple password verification (in production, use proper hashing)
     return plain_password == hashed_password
 
 # Basic endpoints
@@ -72,19 +77,16 @@ async def register(user: UserRegister):
     if user.email in users_db:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create user (in production, hash the password)
     user_data = {
         "id": len(users_db) + 1,
         "username": user.username,
         "email": user.email,
-        "password": user.password,  # In production, hash this
+        "password": user.password,
         "full_name": user.full_name,
         "created_at": datetime.utcnow().isoformat()
     }
     
     users_db[user.email] = user_data
-    
-    # Create access token
     access_token = create_access_token(data={"sub": user.email})
     
     return {
@@ -109,7 +111,6 @@ async def login(user: UserLogin):
     if not verify_password(user.password, stored_user["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Create access token
     access_token = create_access_token(data={"sub": user.email})
     
     return {
@@ -139,11 +140,6 @@ async def get_users():
             for user in users_db.values()
         ]
     }
-
-@app.get("/api/users/me")
-async def get_current_user():
-    # In production, verify JWT token
-    return {"message": "Current user info", "users_count": len(users_db)}
 
 # Project endpoints
 @app.get("/api/projects")
@@ -181,15 +177,11 @@ async def create_task(task_data: dict):
     tasks_db.append(task)
     return {"status": "success", "task": task}
 
-# Environment info
-@app.get("/api/info")
-async def get_info():
-    return {
-        "database_url": os.getenv("DATABASE_URL", "not set"),
-        "environment": os.getenv("ENVIRONMENT", "development"),
-        "cors_origins": os.getenv("BACKEND_CORS_ORIGINS", "not set"),
-        "message": "Backend is working!",
-        "users_count": len(users_db),
-        "projects_count": len(projects_db),
-        "tasks_count": len(tasks_db)
-    }
+if __name__ == "__main__":
+    print("🚀 Starting CampusConnect Backend Server...")
+    print("📍 Backend will be available at: http://localhost:8000")
+    print("📖 API Documentation at: http://localhost:8000/docs")
+    print("🔗 Frontend should connect to: http://localhost:8000")
+    print("\nPress Ctrl+C to stop the server")
+    
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True) 
