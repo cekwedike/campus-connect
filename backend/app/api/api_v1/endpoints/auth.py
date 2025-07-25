@@ -20,14 +20,11 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
         return user_service.create_user(user)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Registration failed. Please try again."
+            detail="Registration failed. Please try again.",
         )
 
 

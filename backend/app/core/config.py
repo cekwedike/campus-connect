@@ -16,7 +16,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000", "*"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "*",
+    ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
@@ -27,10 +31,7 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    model_config = {
-        "case_sensitive": True,
-        "env_file": ".env"
-    }
+    model_config = {"case_sensitive": True, "env_file": ".env"}
 
 
 settings = Settings()

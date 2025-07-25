@@ -42,4 +42,4 @@ class FileResponse(BaseModel):
     download_url: str
 
     class Config:
-        from_attributes = True 
+        from_attributes = True

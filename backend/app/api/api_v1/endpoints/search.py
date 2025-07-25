@@ -14,7 +14,7 @@ router = APIRouter()
 def global_search(
     q: str,
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_user),
 ):
     """Global search across projects, tasks, and users"""
     if len(q) < 2:
@@ -33,18 +33,14 @@ def global_search(
     # Search users
     users = user_service.search_users(q)
 
-    return {
-        "projects": projects,
-        "tasks": tasks,
-        "users": users
-    }
+    return {"projects": projects, "tasks": tasks, "users": users}
 
 
 @router.get("/projects")
 def search_projects(
     q: str,
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_user),
 ):
     """Search projects"""
     if len(q) < 2:
@@ -60,7 +56,7 @@ def search_projects(
 def search_tasks(
     q: str,
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_user),
 ):
     """Search tasks"""
     if len(q) < 2:
@@ -76,7 +72,7 @@ def search_tasks(
 def search_users(
     q: str,
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_user),
 ):
     """Search users"""
     if len(q) < 2:
@@ -85,4 +81,4 @@ def search_users(
     user_service = UserService(db)
     users = user_service.search_users(q)
 
-    return {"users": users} 
+    return {"users": users}

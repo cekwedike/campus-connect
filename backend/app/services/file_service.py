@@ -43,7 +43,7 @@ class FileService:
             file_size=file.size or 0,
             mime_type=file.content_type or "application/octet-stream",
             project_id=project_id,
-            uploaded_by=user_id
+            uploaded_by=user_id,
         )
 
         self.db.add(db_file)
@@ -69,7 +69,7 @@ class FileService:
         return {
             "path": file_obj.file_path,
             "filename": file_obj.original_filename,
-            "mime_type": file_obj.mime_type
+            "mime_type": file_obj.mime_type,
         }
 
     def delete_file(self, file_id: int, user_id: int) -> bool:
@@ -81,9 +81,9 @@ class FileService:
         # Check if user owns the file or is project owner
         if file_obj.uploaded_by != user_id:
             # Check if user is project owner
-            project = self.db.query(Project).filter(
-                Project.id == file_obj.project_id
-            ).first()
+            project = (
+                self.db.query(Project).filter(Project.id == file_obj.project_id).first()
+            )
             if not project or project.owner_id != user_id:
                 return False
 
@@ -97,7 +97,9 @@ class FileService:
 
         return True
 
-    def update_file(self, file_id: int, user_id: int, description: str) -> Optional[File]:
+    def update_file(
+        self, file_id: int, user_id: int, description: str
+    ) -> Optional[File]:
         """Update file description"""
         file_obj = self.get_file(file_id)
         if not file_obj or file_obj.uploaded_by != user_id:
@@ -107,4 +109,4 @@ class FileService:
         self.db.commit()
         self.db.refresh(file_obj)
 
-        return file_obj 
+        return file_obj

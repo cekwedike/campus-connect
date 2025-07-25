@@ -15,7 +15,7 @@ def upload_file(
     project_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Upload a file to a project"""
     file_service = FileService(db)
@@ -26,7 +26,7 @@ def upload_file(
 def get_project_files(
     project_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Get all files for a project"""
     file_service = FileService(db)
@@ -37,7 +37,7 @@ def get_project_files(
 def get_file(
     file_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Get a specific file by ID"""
     file_service = FileService(db)
@@ -51,7 +51,7 @@ def get_file(
 def delete_file(
     file_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Delete a file"""
     file_service = FileService(db)
@@ -64,11 +64,11 @@ def delete_file(
 def download_file(
     file_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Download a file"""
     file_service = FileService(db)
     file_data = file_service.download_file(file_id)
     if not file_data:
         raise HTTPException(status_code=404, detail="File not found")
-    return file_data 
+    return file_data
