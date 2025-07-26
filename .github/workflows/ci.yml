@@ -104,7 +104,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build and cache Docker layers
+    - name: Build backend image
       uses: docker/build-push-action@v5
       with:
         context: ./backend
@@ -112,4 +112,22 @@ jobs:
         load: true
         tags: campusconnect-backend:latest
         cache-from: type=gha
-        cache-to: type=gha,mode=max 
+        cache-to: type=gha,mode=max
+    
+    - name: Build frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: false
+        load: true
+        tags: campusconnect-frontend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Verify images
+      run: |
+        docker images | grep campusconnect
+        echo "Backend image size:"
+        docker images campusconnect-backend:latest --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+        echo "Frontend image size:"
+        docker images campusconnect-frontend:latest --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" 
