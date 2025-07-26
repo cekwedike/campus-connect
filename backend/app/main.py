@@ -55,6 +55,98 @@ test_user = {
 }
 users_db["test@example.com"] = test_user
 
+# Add sample projects for dashboard
+sample_projects = [
+    {
+        "id": 1,
+        "title": "CampusConnect Development",
+        "description": "Building a collaborative platform for university students to work together on projects and share resources.",
+        "status": "active",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "owner_id": 1,
+        "members": [1]
+    },
+    {
+        "id": 2,
+        "title": "Study Group Management",
+        "description": "Organizing study groups for different courses and managing study schedules.",
+        "status": "active",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "owner_id": 1,
+        "members": [1]
+    },
+    {
+        "id": 3,
+        "title": "Resource Sharing Hub",
+        "description": "Creating a central hub for sharing academic resources, notes, and study materials.",
+        "status": "planning",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "owner_id": 1,
+        "members": [1]
+    }
+]
+projects_db.extend(sample_projects)
+
+# Add sample tasks for dashboard
+sample_tasks = [
+    {
+        "id": 1,
+        "title": "Design User Interface",
+        "description": "Create wireframes and mockups for the main dashboard",
+        "status": "done",
+        "priority": "high",
+        "project_id": 1,
+        "assigned_to": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+    },
+    {
+        "id": 2,
+        "title": "Implement Authentication",
+        "description": "Set up user registration and login functionality",
+        "status": "done",
+        "priority": "high",
+        "project_id": 1,
+        "assigned_to": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=5)).isoformat()
+    },
+    {
+        "id": 3,
+        "title": "Create Study Group Features",
+        "description": "Develop features for creating and managing study groups",
+        "status": "in_progress",
+        "priority": "medium",
+        "project_id": 2,
+        "assigned_to": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat()
+    },
+    {
+        "id": 4,
+        "title": "Set up Resource Library",
+        "description": "Create a system for uploading and organizing study materials",
+        "status": "todo",
+        "priority": "medium",
+        "project_id": 3,
+        "assigned_to": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=14)).isoformat()
+    },
+    {
+        "id": 5,
+        "title": "Test Application",
+        "description": "Perform comprehensive testing of all features",
+        "status": "todo",
+        "priority": "high",
+        "project_id": 1,
+        "assigned_to": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat()
+    }
+]
+tasks_db.extend(sample_tasks)
+
 
 # Helper functions
 def create_access_token(data: dict):
