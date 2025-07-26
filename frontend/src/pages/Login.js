@@ -19,7 +19,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    const result = await login(data.username, data.password);
+    const result = await login(data.email, data.password);
     setIsLoading(false);
 
     if (result.success) {
@@ -65,24 +65,30 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Username Field */}
+            {/* Email Field */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-800">
-                Username
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-600" />
                 </div>
                 <input
-                  {...register('username', { required: 'Username is required' })}
-                  type="text"
+                  {...register('email', { 
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Invalid email address'
+                    }
+                  })}
+                  type="email"
                   className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
-                  placeholder="Enter your username"
+                  placeholder="Enter your email"
                 />
               </div>
-              {errors.username && (
-                <p className="text-red-300 text-sm">{errors.username.message}</p>
+              {errors.email && (
+                <p className="text-red-300 text-sm">{errors.email.message}</p>
               )}
             </div>
 
