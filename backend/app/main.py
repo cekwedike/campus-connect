@@ -44,6 +44,17 @@ users_db = {}
 projects_db = []
 tasks_db = []
 
+# Add a test user for immediate testing
+test_user = {
+    "id": 1,
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "testpassword",  # In production, hash this
+    "full_name": "Test User",
+    "created_at": datetime.now(timezone.utc).isoformat(),
+}
+users_db["test@example.com"] = test_user
+
 
 # Helper functions
 def create_access_token(data: dict):
