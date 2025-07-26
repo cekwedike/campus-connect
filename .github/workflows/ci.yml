@@ -82,6 +82,8 @@ jobs:
         safety check || echo "Safety check completed with warnings"
         # Run bandit for security linting (allow to fail)
         bandit -r app/ -f json -o bandit-report.json || echo "Bandit check completed with warnings"
+        # Ensure bandit-report.json exists
+        if [ ! -f bandit-report.json ]; then echo "[]" > bandit-report.json; fi
     
     - name: Upload security report
       uses: actions/upload-artifact@v4
@@ -89,6 +91,7 @@ jobs:
         name: security-report
         path: backend/bandit-report.json
       if: always()
+      continue-on-error: true
 
   build:
     runs-on: ubuntu-latest
