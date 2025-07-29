@@ -193,6 +193,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
+    - name: Set Azure Subscription
+      run: |
+        az account set --subscription f397a1ba-b784-4858-b6c6-dce6980197f8
+        az account show --query "name" -o tsv
+    
     - name: Deploy Backend to Staging
       run: |
         az containerapp update \
@@ -238,6 +243,11 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Set Azure Subscription
+      run: |
+        az account set --subscription f397a1ba-b784-4858-b6c6-dce6980197f8
+        az account show --query "name" -o tsv
     
     - name: Deploy Backend to Production
       run: |
