@@ -73,4 +73,18 @@ def test_register_duplicate_email():
     
     # Try to register again with same email
     response = client.post("/api/auth/register", json=user_data)
-    assert response.status_code == 400 
+    assert response.status_code == 400
+
+
+def test_login_existing_user():
+    """Test login with existing test user"""
+    login_data = {
+        "email": "test@example.com",
+        "password": "testpassword"
+    }
+    
+    response = client.post("/api/auth/login", json=login_data)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "access_token" in data 

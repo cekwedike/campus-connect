@@ -50,7 +50,7 @@ export const authAPI = {
 
 // Users API
 export const usersAPI = {
-  getUsers: () => api.get('/users/'),
+  getUsers: () => api.get('/users'),
   getUser: (id) => api.get(`/users/${id}`),
   updateUser: (id, data) => api.put(`/users/${id}`, data),
   deleteUser: (id) => api.delete(`/users/${id}`),
@@ -58,19 +58,19 @@ export const usersAPI = {
 
 // Projects API
 export const projectsAPI = {
-  getProjects: () => api.get('/projects/'),
+  getProjects: () => api.get('/projects'),
   getProject: (id) => api.get(`/projects/${id}`),
-  createProject: (data) => api.post('/projects/', data),
+  createProject: (data) => api.post('/projects', data),
   updateProject: (id, data) => api.put(`/projects/${id}`, data),
   deleteProject: (id) => api.delete(`/projects/${id}`),
 };
 
 // Tasks API
 export const tasksAPI = {
-  getTasks: () => api.get('/tasks/'),
+  getTasks: () => api.get('/tasks'),
   getTasksByProject: (projectId) => api.get(`/tasks/project/${projectId}`),
   getTask: (id) => api.get(`/tasks/${id}`),
-  createTask: (data) => api.post('/tasks/', data),
+  createTask: (data) => api.post('/tasks', data),
   updateTask: (id, data) => api.put(`/tasks/${id}`, data),
   deleteTask: (id) => api.delete(`/tasks/${id}`),
 };
@@ -79,7 +79,7 @@ export const tasksAPI = {
 export const projectMembersAPI = {
   getProjectMembers: (projectId) => api.get(`/project-members/project/${projectId}`),
   getUserProjects: (userId) => api.get(`/project-members/user/${userId}`),
-  addProjectMember: (data) => api.post('/project-members/', data),
+  addProjectMember: (data) => api.post('/project-members', data),
   updateProjectMember: (projectId, userId, data) => 
     api.put(`/project-members/project/${projectId}/user/${userId}`, data),
   removeProjectMember: (projectId, userId) => 
