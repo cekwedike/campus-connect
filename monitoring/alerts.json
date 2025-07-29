@@ -1,0 +1,181 @@
+{
+  "alerts": [
+    {
+      "name": "high-error-rate",
+      "description": "Alert when error rate exceeds 5%",
+      "condition": {
+        "metric": "http_requests_total",
+        "operator": ">",
+        "threshold": 5,
+        "window": "5m"
+      },
+      "severity": "critical",
+      "notification": {
+        "email": ["devops@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "high-response-time",
+      "description": "Alert when 95th percentile response time exceeds 2 seconds",
+      "condition": {
+        "metric": "http_request_duration_seconds",
+        "operator": ">",
+        "threshold": 2,
+        "window": "5m",
+        "percentile": 95
+      },
+      "severity": "warning",
+      "notification": {
+        "email": ["devops@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "database-connection-failure",
+      "description": "Alert when database connection fails",
+      "condition": {
+        "metric": "database_connection_errors",
+        "operator": ">",
+        "threshold": 0,
+        "window": "1m"
+      },
+      "severity": "critical",
+      "notification": {
+        "email": ["devops@campusconnect.com", "dba@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "container-memory-high",
+      "description": "Alert when container memory usage exceeds 80%",
+      "condition": {
+        "metric": "container_memory_usage_percent",
+        "operator": ">",
+        "threshold": 80,
+        "window": "5m"
+      },
+      "severity": "warning",
+      "notification": {
+        "email": ["devops@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "container-cpu-high",
+      "description": "Alert when container CPU usage exceeds 90%",
+      "condition": {
+        "metric": "container_cpu_usage_percent",
+        "operator": ">",
+        "threshold": 90,
+        "window": "5m"
+      },
+      "severity": "warning",
+      "notification": {
+        "email": ["devops@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "application-unavailable",
+      "description": "Alert when application health check fails",
+      "condition": {
+        "metric": "application_health_status",
+        "operator": "==",
+        "threshold": 0,
+        "window": "1m"
+      },
+      "severity": "critical",
+      "notification": {
+        "email": ["devops@campusconnect.com", "oncall@campusconnect.com"],
+        "slack": "#alerts",
+        "pagerduty": "PAGERDUTY_SERVICE_KEY"
+      }
+    },
+    {
+      "name": "deployment-failure",
+      "description": "Alert when deployment fails",
+      "condition": {
+        "metric": "deployment_status",
+        "operator": "==",
+        "threshold": 0,
+        "window": "5m"
+      },
+      "severity": "critical",
+      "notification": {
+        "email": ["devops@campusconnect.com"],
+        "slack": "#alerts"
+      }
+    },
+    {
+      "name": "security-vulnerability-detected",
+      "description": "Alert when security vulnerabilities are detected",
+      "condition": {
+        "metric": "security_vulnerabilities_total",
+        "operator": ">",
+        "threshold": 0,
+        "window": "1h"
+      },
+      "severity": "high",
+      "notification": {
+        "email": ["security@campusconnect.com", "devops@campusconnect.com"],
+        "slack": "#security"
+      }
+    }
+  ],
+  "notification_channels": {
+    "email": {
+      "devops@campusconnect.com": {
+        "name": "DevOps Team",
+        "type": "email"
+      },
+      "security@campusconnect.com": {
+        "name": "Security Team",
+        "type": "email"
+      },
+      "oncall@campusconnect.com": {
+        "name": "On-Call Team",
+        "type": "email"
+      },
+      "dba@campusconnect.com": {
+        "name": "Database Team",
+        "type": "email"
+      }
+    },
+    "slack": {
+      "#alerts": {
+        "name": "Alerts Channel",
+        "type": "slack"
+      },
+      "#security": {
+        "name": "Security Channel",
+        "type": "slack"
+      }
+    },
+    "pagerduty": {
+      "PAGERDUTY_SERVICE_KEY": {
+        "name": "On-Call Escalation",
+        "type": "pagerduty"
+      }
+    }
+  },
+  "escalation_policy": {
+    "levels": [
+      {
+        "level": 1,
+        "delay": "0m",
+        "notifications": ["slack:#alerts", "email:devops@campusconnect.com"]
+      },
+      {
+        "level": 2,
+        "delay": "5m",
+        "notifications": ["slack:#alerts", "email:oncall@campusconnect.com"]
+      },
+      {
+        "level": 3,
+        "delay": "15m",
+        "notifications": ["pagerduty:PAGERDUTY_SERVICE_KEY"]
+      }
+    ]
+  }
+} 

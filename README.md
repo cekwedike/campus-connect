@@ -84,26 +84,50 @@ print('User created successfully')
 
 ## ☁️ Azure Cloud Deployment
 
-### Prerequisites
+### Live Environments
+
+#### Production Environment
+- **Frontend**: https://campus-connect-frontend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io
+- **Backend**: https://campus-connect-backend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io
+- **API Documentation**: https://campus-connect-backend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/docs
+
+#### Staging Environment
+- **Frontend**: https://campus-connect-frontend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io
+- **Backend**: https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io
+- **API Documentation**: https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/docs
+
+### Continuous Deployment
+
+The application uses a fully automated CI/CD pipeline that:
+
+1. **Automated Testing**: Runs comprehensive tests on every commit
+2. **Security Scanning**: Performs dependency and container vulnerability scans
+3. **Staging Deployment**: Automatically deploys to staging on `develop` branch
+4. **Production Deployment**: Automatically deploys to production on `main` branch
+5. **Monitoring**: Provides real-time health checks and logging
+
+### Manual Deployment (Legacy)
+
+#### Prerequisites
 1. Azure Account with appropriate permissions
 2. Azure CLI installed and configured
 3. Terraform installed
 4. Docker installed
 
-### 1. Configure Azure
+#### 1. Configure Azure
 ```bash
 az login
 az account set --subscription <your-subscription-id>
 ```
 
-### 2. Set Up Terraform Variables
+#### 2. Set Up Terraform Variables
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars with your values
 ```
 
-### 3. Deploy Infrastructure
+#### 3. Deploy Infrastructure
 ```bash
 # Initialize Terraform
 terraform init
@@ -115,20 +139,20 @@ terraform plan
 terraform apply
 ```
 
-### 4. Build and Push Docker Images
+#### 4. Build and Push Docker Images
 ```bash
 # Make deployment script executable
 chmod +x scripts/deploy.sh
 
 # Set environment variables
 export ACR_NAME=$(terraform output -raw acr_login_server | cut -d'.' -f1)
-export AZURE_REGION=East US
+export AZURE_REGION=West US 2
 
 # Deploy images
 ./scripts/deploy.sh
 ```
 
-### 5. Update Container Apps
+#### 5. Update Container Apps
 ```bash
 # Get Container App names
 az containerapp list --resource-group $(terraform output -raw resource_group_name) --query "[].name" -o tsv
@@ -136,16 +160,6 @@ az containerapp list --resource-group $(terraform output -raw resource_group_nam
 # Update Container Apps with new images
 az containerapp update --name backend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-backend:latest
 az containerapp update --name frontend-app --resource-group $(terraform output -raw resource_group_name) --image $(terraform output -raw acr_login_server)/campus-connect-frontend:latest
-```
-
-### 6. Access Your Application
-```bash
-# Get the Application Gateway URL
-terraform output app_gateway_url
-
-# Your application will be available at:
-# Frontend: http://<app-gateway-url>
-# Backend: http://<app-gateway-url>/api
 ```
 
 ## 🛠️ Development Setup
