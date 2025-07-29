@@ -7,6 +7,12 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
+# Add permissions for security scanning
+permissions:
+  security-events: write
+  actions: read
+  contents: read
+
 env:
   REGISTRY: campusconnect2024acr.azurecr.io
   BACKEND_IMAGE: campusconnect-backend
