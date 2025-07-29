@@ -64,7 +64,7 @@ sample_projects = [
         "status": "active",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "owner_id": 1,
-        "members": [1]
+        "members": [1],
     },
     {
         "id": 2,
@@ -73,7 +73,7 @@ sample_projects = [
         "status": "active",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "owner_id": 1,
-        "members": [1]
+        "members": [1],
     },
     {
         "id": 3,
@@ -82,8 +82,8 @@ sample_projects = [
         "status": "planning",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "owner_id": 1,
-        "members": [1]
-    }
+        "members": [1],
+    },
 ]
 projects_db.extend(sample_projects)
 
@@ -98,7 +98,7 @@ sample_tasks = [
         "project_id": 1,
         "assigned_to": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
     },
     {
         "id": 2,
@@ -109,7 +109,7 @@ sample_tasks = [
         "project_id": 1,
         "assigned_to": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=5)).isoformat()
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=5)).isoformat(),
     },
     {
         "id": 3,
@@ -120,7 +120,7 @@ sample_tasks = [
         "project_id": 2,
         "assigned_to": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat()
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat(),
     },
     {
         "id": 4,
@@ -131,7 +131,7 @@ sample_tasks = [
         "project_id": 3,
         "assigned_to": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=14)).isoformat()
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=14)).isoformat(),
     },
     {
         "id": 5,
@@ -142,8 +142,8 @@ sample_tasks = [
         "project_id": 1,
         "assigned_to": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat()
-    }
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat(),
+    },
 ]
 tasks_db.extend(sample_tasks)
 
