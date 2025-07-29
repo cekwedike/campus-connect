@@ -192,7 +192,6 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        subscription-id: f397a1ba-b784-4858-b6c6-dce6980197f8
     
     - name: Deploy Backend to Staging
       run: |
@@ -239,7 +238,6 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        subscription-id: f397a1ba-b784-4858-b6c6-dce6980197f8
     
     - name: Deploy Backend to Production
       run: |
@@ -306,7 +304,6 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        subscription-id: f397a1ba-b784-4858-b6c6-dce6980197f8
       continue-on-error: true
     
     - name: Check Application Logs
