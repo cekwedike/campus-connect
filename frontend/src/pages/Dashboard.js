@@ -47,8 +47,13 @@ const Dashboard = () => {
         tasksAPI.getTasks()
       ]);
 
-      const projects = projectsResponse.data;
-      const tasks = tasksResponse.data;
+      const projects = projectsResponse.data.projects || projectsResponse.data;
+      const tasks = tasksResponse.data.tasks || tasksResponse.data;
+
+      console.log('Projects response:', projectsResponse.data);
+      console.log('Tasks response:', tasksResponse.data);
+      console.log('Extracted projects:', projects);
+      console.log('Extracted tasks:', tasks);
 
       // Calculate stats
       const completedTasks = tasks.filter(task => task.status === 'done').length;
@@ -65,7 +70,18 @@ const Dashboard = () => {
       setRecentTasks(tasks.slice(0, 5));
     } catch (error) {
       console.error('Dashboard data error:', error);
-      toast.error('Failed to load dashboard data. Please try again.');
+      console.error('Error response:', error.response);
+      console.error('Error message:', error.message);
+      
+      if (error.response?.status === 401) {
+        toast.error('Authentication failed. Please log in again.');
+      } else if (error.response?.status === 403) {
+        toast.error('Access denied. Please check your permissions.');
+      } else if (error.code === 'ERR_NETWORK') {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error('Failed to load dashboard data. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
