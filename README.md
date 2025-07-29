@@ -311,3 +311,4 @@ The project includes Azure DevOps pipelines for:
 ---
 
 **Built with ❤️ for student collaboration** # Pipeline test - 07/29/2025 03:52:04
+# Test commit to trigger pipeline
