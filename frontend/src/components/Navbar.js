@@ -19,9 +19,9 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Projects', href: '/projects', icon: '📁' },
-    { name: 'Tasks', href: '/tasks', icon: '✅' },
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Tasks', href: '/tasks' },
   ];
 
   const handleLogout = () => {
@@ -68,14 +68,13 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                   isActive(item.href)
                     ? 'bg-primary-100 text-primary-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                <span>{item.icon}</span>
-                <span>{item.name}</span>
+                {item.name}
               </Link>
             ))}
           </div>
@@ -165,15 +164,14 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
+                className={`px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 ${
                   isActive(item.href)
                     ? 'bg-primary-100 text-primary-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <span>{item.icon}</span>
-                <span>{item.name}</span>
+                {item.name}
               </Link>
             ))}
             
