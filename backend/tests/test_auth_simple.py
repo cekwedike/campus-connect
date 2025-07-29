@@ -7,10 +7,10 @@ client = TestClient(app)
 def test_register_user():
     """Test user registration"""
     user_data = {
-        "username": "testuser",
-        "email": "test@example.com",
+        "username": "newtestuser",
+        "email": "newtest@example.com",
         "password": "testpassword",
-        "full_name": "Test User"
+        "full_name": "New Test User"
     }
     
     response = client.post("/api/auth/register", json=user_data)

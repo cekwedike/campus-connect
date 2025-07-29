@@ -298,24 +298,30 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+      continue-on-error: true
     
     - name: Check Application Logs
       run: |
         echo "📊 Checking application logs..."
         
-        # Check backend logs
-        echo "Backend logs (last 10 lines):"
-        az containerapp logs show \
-          --name ${{ env.BACKEND_APP_NAME }} \
-          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-          --tail 10 || echo "No logs available"
-        
-        # Check frontend logs
-        echo "Frontend logs (last 10 lines):"
-        az containerapp logs show \
-          --name ${{ env.FRONTEND_APP_NAME }} \
-          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-          --tail 10 || echo "No logs available"
+        # Check if Azure login was successful
+        if az account show > /dev/null 2>&1; then
+          # Check backend logs
+          echo "Backend logs (last 10 lines):"
+          az containerapp logs show \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --tail 10 || echo "No logs available"
+          
+          # Check frontend logs
+          echo "Frontend logs (last 10 lines):"
+          az containerapp logs show \
+            --name ${{ env.FRONTEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --tail 10 || echo "No logs available"
+        else
+          echo "⚠️ Azure login failed, skipping log checks"
+        fi
     
     - name: Health Check All Environments
       run: |
