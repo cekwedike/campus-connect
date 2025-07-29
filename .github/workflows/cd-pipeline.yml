@@ -88,14 +88,14 @@ jobs:
       run: |
         cd backend
         echo "Running dependency vulnerability scan..."
-        safety check --json --output backend/safety-report.json || echo "Safety check completed with warnings"
+        safety check --json > safety-report.json || echo "Safety check completed with warnings"
         
         echo "Running code security analysis..."
-        bandit -r app/ -f json -o backend/bandit-report.json || echo "Bandit check completed with warnings"
+        bandit -r app/ -f json -o bandit-report.json || echo "Bandit check completed with warnings"
         
         # Ensure report files exist
-        if [ ! -f backend/safety-report.json ]; then echo "[]" > backend/safety-report.json; fi
-        if [ ! -f backend/bandit-report.json ]; then echo "[]" > backend/bandit-report.json; fi
+        if [ ! -f safety-report.json ]; then echo "[]" > safety-report.json; fi
+        if [ ! -f bandit-report.json ]; then echo "[]" > bandit-report.json; fi
     
     - name: Upload security reports
       uses: actions/upload-artifact@v4
