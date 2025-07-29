@@ -55,98 +55,6 @@ test_user = {
 }
 users_db["test@example.com"] = test_user
 
-# Add sample projects for dashboard
-sample_projects = [
-    {
-        "id": 1,
-        "title": "CampusConnect Development",
-        "description": "Building a collaborative platform for university students to work together on projects and share resources.",
-        "status": "active",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "owner_id": 1,
-        "members": [1],
-    },
-    {
-        "id": 2,
-        "title": "Study Group Management",
-        "description": "Organizing study groups for different courses and managing study schedules.",
-        "status": "active",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "owner_id": 1,
-        "members": [1],
-    },
-    {
-        "id": 3,
-        "title": "Resource Sharing Hub",
-        "description": "Creating a central hub for sharing academic resources, notes, and study materials.",
-        "status": "planning",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "owner_id": 1,
-        "members": [1],
-    },
-]
-projects_db.extend(sample_projects)
-
-# Add sample tasks for dashboard
-sample_tasks = [
-    {
-        "id": 1,
-        "title": "Design User Interface",
-        "description": "Create wireframes and mockups for the main dashboard",
-        "status": "done",
-        "priority": "high",
-        "project_id": 1,
-        "assigned_to": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
-    },
-    {
-        "id": 2,
-        "title": "Implement Authentication",
-        "description": "Set up user registration and login functionality",
-        "status": "done",
-        "priority": "high",
-        "project_id": 1,
-        "assigned_to": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=5)).isoformat(),
-    },
-    {
-        "id": 3,
-        "title": "Create Study Group Features",
-        "description": "Develop features for creating and managing study groups",
-        "status": "in_progress",
-        "priority": "medium",
-        "project_id": 2,
-        "assigned_to": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat(),
-    },
-    {
-        "id": 4,
-        "title": "Set up Resource Library",
-        "description": "Create a system for uploading and organizing study materials",
-        "status": "todo",
-        "priority": "medium",
-        "project_id": 3,
-        "assigned_to": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=14)).isoformat(),
-    },
-    {
-        "id": 5,
-        "title": "Test Application",
-        "description": "Perform comprehensive testing of all features",
-        "status": "todo",
-        "priority": "high",
-        "project_id": 1,
-        "assigned_to": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "due_date": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat(),
-    },
-]
-tasks_db.extend(sample_tasks)
-
 
 # Helper functions
 def create_access_token(data: dict):
@@ -264,7 +172,10 @@ async def get_current_user():
 # Project endpoints
 @app.get("/api/projects")
 async def get_projects():
-    return {"projects": projects_db}
+    # In production, get user from JWT token
+    # For now, return all projects (will be filtered by user in production)
+    user_projects = [p for p in projects_db if p.get("owner_id") == 1]  # Default to user ID 1
+    return {"projects": user_projects}
 
 
 @app.post("/api/projects")
@@ -273,7 +184,8 @@ async def create_project(project_data: dict):
         "id": len(projects_db) + 1,
         "title": project_data.get("title", "Untitled Project"),
         "description": project_data.get("description", ""),
-        "created_by": project_data.get("created_by", "Unknown"),
+        "status": project_data.get("status", "active"),
+        "owner_id": project_data.get("owner_id", 1),  # Default to user ID 1
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     projects_db.append(project)
@@ -283,7 +195,10 @@ async def create_project(project_data: dict):
 # Task endpoints
 @app.get("/api/tasks")
 async def get_tasks():
-    return {"tasks": tasks_db}
+    # In production, get user from JWT token
+    # For now, return all tasks (will be filtered by user in production)
+    user_tasks = [t for t in tasks_db if t.get("assigned_to") == 1]  # Default to user ID 1
+    return {"tasks": user_tasks}
 
 
 @app.post("/api/tasks")
@@ -293,9 +208,11 @@ async def create_task(task_data: dict):
         "title": task_data.get("title", "Untitled Task"),
         "description": task_data.get("description", ""),
         "project_id": task_data.get("project_id"),
-        "assigned_to": task_data.get("assigned_to", "Unassigned"),
-        "status": task_data.get("status", "pending"),
+        "assigned_to": task_data.get("assigned_to", 1),  # Default to user ID 1
+        "status": task_data.get("status", "todo"),
+        "priority": task_data.get("priority", "medium"),
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "due_date": task_data.get("due_date"),
     }
     tasks_db.append(task)
     return {"status": "success", "task": task}

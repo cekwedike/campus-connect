@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useData } from '../contexts/DataContext';
 import { toast } from 'react-hot-toast';
-import { projectsAPI, tasksAPI } from '../services/api';
 import { 
   Users, 
   FolderOpen, 
@@ -19,73 +19,30 @@ import {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { projects, tasks, loading, error } = useData();
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalTasks: 0,
     completedTasks: 0,
     pendingTasks: 0
   });
-  const [recentProjects, setRecentProjects] = useState([]);
-  const [recentTasks, setRecentTasks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
+  // Calculate stats when projects or tasks change
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    const completedTasks = tasks.filter(task => task.status === 'done').length;
+    const pendingTasks = tasks.filter(task => task.status !== 'done').length;
 
-  const fetchDashboardData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('No authentication token found');
-        return;
-      }
+    setStats({
+      totalProjects: projects.length,
+      totalTasks: tasks.length,
+      completedTasks,
+      pendingTasks
+    });
+  }, [projects, tasks]);
 
-      // Fetch projects and tasks using the API service
-      const [projectsResponse, tasksResponse] = await Promise.all([
-        projectsAPI.getProjects(),
-        tasksAPI.getTasks()
-      ]);
-
-      const projects = projectsResponse.data.projects || projectsResponse.data;
-      const tasks = tasksResponse.data.tasks || tasksResponse.data;
-
-      console.log('Projects response:', projectsResponse.data);
-      console.log('Tasks response:', tasksResponse.data);
-      console.log('Extracted projects:', projects);
-      console.log('Extracted tasks:', tasks);
-
-      // Calculate stats
-      const completedTasks = tasks.filter(task => task.status === 'done').length;
-      const pendingTasks = tasks.filter(task => task.status !== 'done').length;
-
-      setStats({
-        totalProjects: projects.length,
-        totalTasks: tasks.length,
-        completedTasks,
-        pendingTasks
-      });
-
-      setRecentProjects(projects.slice(0, 3));
-      setRecentTasks(tasks.slice(0, 5));
-    } catch (error) {
-      console.error('Dashboard data error:', error);
-      console.error('Error response:', error.response);
-      console.error('Error message:', error.message);
-      
-      if (error.response?.status === 401) {
-        toast.error('Authentication failed. Please log in again.');
-      } else if (error.response?.status === 403) {
-        toast.error('Access denied. Please check your permissions.');
-      } else if (error.code === 'ERR_NETWORK') {
-        toast.error('Network error. Please check your connection.');
-      } else {
-        toast.error('Failed to load dashboard data. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Get recent projects and tasks
+  const recentProjects = projects.slice(0, 3);
+  const recentTasks = tasks.slice(0, 5);
 
   const StatCard = ({ icon: Icon, title, value, color, gradient }) => (
     <div className={`card bg-gradient-to-br ${gradient} border-0 text-white`}>
@@ -159,7 +116,7 @@ const Dashboard = () => {
     );
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-7xl mx-auto">
@@ -174,6 +131,22 @@ const Dashboard = () => {
               <div className="h-96 bg-gray-200 rounded-2xl"></div>
               <div className="h-96 bg-gray-200 rounded-2xl"></div>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load dashboard data</h3>
+            <p className="text-gray-500 mb-4">Please try again later.</p>
+            <Link to="/" className="btn-primary">
+              Back to Home
+            </Link>
           </div>
         </div>
       </div>
