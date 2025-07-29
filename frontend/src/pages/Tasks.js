@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { tasksAPI, projectsAPI } from '../services/api';
+import { useData } from '../contexts/DataContext';
 import { 
   Plus, 
   Filter, 
@@ -18,9 +18,7 @@ import {
 } from 'lucide-react';
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { tasks, projects, loading, error, createTask, updateTask, deleteTask } = useData();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,26 +30,6 @@ const Tasks = () => {
     project_id: '',
     due_date: ''
   });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [tasksResponse, projectsResponse] = await Promise.all([
-        tasksAPI.getTasks(),
-        projectsAPI.getProjects()
-      ]);
-      
-      setTasks(tasksResponse.data);
-      setProjects(projectsResponse.data);
-    } catch (error) {
-      toast.error('Failed to load tasks');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
@@ -65,7 +43,7 @@ const Tasks = () => {
         due_date: newTask.due_date ? new Date(newTask.due_date).toISOString() : null
       };
       
-      await tasksAPI.createTask(taskData);
+      await createTask(taskData);
       toast.success('Task created successfully!');
       setShowCreateModal(false);
       setNewTask({
@@ -75,7 +53,6 @@ const Tasks = () => {
         project_id: '',
         due_date: ''
       });
-      fetchData();
     } catch (error) {
       console.error('Task creation error:', error);
       toast.error('Failed to create task. Please check all required fields.');
@@ -84,9 +61,8 @@ const Tasks = () => {
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
-      await tasksAPI.updateTask(taskId, { status: newStatus });
+      await updateTask(taskId, { status: newStatus });
       toast.success('Task status updated!');
-      fetchData();
     } catch (error) {
       toast.error('Failed to update task status');
     }
@@ -95,9 +71,8 @@ const Tasks = () => {
   const handleDeleteTask = async (taskId) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await tasksAPI.deleteTask(taskId);
+        await deleteTask(taskId);
         toast.success('Task deleted successfully!');
-        fetchData();
       } catch (error) {
         toast.error('Failed to delete task');
       }
@@ -136,7 +111,7 @@ const Tasks = () => {
     return project ? project.title : 'Unknown Project';
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="max-w-7xl mx-auto">
@@ -147,6 +122,26 @@ const Tasks = () => {
                 <div key={i} className="h-48 bg-gray-200 rounded-2xl"></div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="card text-center py-12">
+            <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
+            <h3 className="text-xl font-medium text-gray-900 mb-2">Error loading tasks</h3>
+            <p className="text-gray-500 mb-6">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-primary"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </div>
