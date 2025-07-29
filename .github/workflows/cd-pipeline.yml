@@ -190,11 +190,13 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     
     - name: Set Azure Subscription
       run: |
-        az account set --subscription f397a1ba-b784-4858-b6c6-dce6980197f8
+        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         az account show --query "name" -o tsv
     
     - name: Deploy Backend to Staging
@@ -240,11 +242,13 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     
     - name: Set Azure Subscription
       run: |
-        az account set --subscription f397a1ba-b784-4858-b6c6-dce6980197f8
+        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         az account show --query "name" -o tsv
     
     - name: Deploy Backend to Production
@@ -311,7 +315,9 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       continue-on-error: true
     
     - name: Check Application Logs
