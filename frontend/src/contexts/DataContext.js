@@ -107,6 +107,7 @@ export const DataProvider = ({ children }) => {
       const response = await projectsAPI.createProject(projectData);
       const newProject = response.data;
       dispatch({ type: ACTIONS.ADD_PROJECT, payload: newProject });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Project created successfully!');
       return newProject;
     } catch (error) {
@@ -123,6 +124,7 @@ export const DataProvider = ({ children }) => {
       const response = await projectsAPI.updateProject(id, projectData);
       const updatedProject = response.data;
       dispatch({ type: ACTIONS.UPDATE_PROJECT, payload: updatedProject });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Project updated successfully!');
       return updatedProject;
     } catch (error) {
@@ -138,6 +140,7 @@ export const DataProvider = ({ children }) => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
       await projectsAPI.deleteProject(id);
       dispatch({ type: ACTIONS.DELETE_PROJECT, payload: id });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Project deleted successfully!');
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -154,6 +157,7 @@ export const DataProvider = ({ children }) => {
       const response = await tasksAPI.createTask(taskData);
       const newTask = response.data;
       dispatch({ type: ACTIONS.ADD_TASK, payload: newTask });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Task created successfully!');
       return newTask;
     } catch (error) {
@@ -170,6 +174,7 @@ export const DataProvider = ({ children }) => {
       const response = await tasksAPI.updateTask(id, taskData);
       const updatedTask = response.data;
       dispatch({ type: ACTIONS.UPDATE_TASK, payload: updatedTask });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Task updated successfully!');
       return updatedTask;
     } catch (error) {
@@ -185,6 +190,7 @@ export const DataProvider = ({ children }) => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
       await tasksAPI.deleteTask(id);
       dispatch({ type: ACTIONS.DELETE_TASK, payload: id });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       toast.success('Task deleted successfully!');
     } catch (error) {
       console.error('Error deleting task:', error);

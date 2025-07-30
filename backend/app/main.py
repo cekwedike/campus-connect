@@ -278,7 +278,7 @@ async def create_project(project_data: dict):
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     projects_db.append(project)
-    return {"status": "success", "project": project}
+    return project
 
 
 # Task endpoints
@@ -304,7 +304,7 @@ async def create_task(task_data: dict):
         "due_date": task_data.get("due_date"),
     }
     tasks_db.append(task)
-    return {"status": "success", "task": task}
+    return task
 
 
 # Environment info
