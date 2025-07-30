@@ -250,3 +250,56 @@ async def get_info():
         "projects_count": len(projects_db),
         "tasks_count": len(tasks_db),
     }
+
+
+# Global search endpoint
+@app.get("/api/search/global")
+async def global_search(q: str):
+    if not q or len(q.strip()) < 2:
+        return {"projects": [], "tasks": [], "users": []}
+    
+    query = q.lower().strip()
+    results = {
+        "projects": [],
+        "tasks": [],
+        "users": []
+    }
+    
+    # Search in projects
+    for project in projects_db:
+        if (query in project.get("title", "").lower() or 
+            query in project.get("description", "").lower()):
+            results["projects"].append({
+                "id": project["id"],
+                "title": project["title"],
+                "description": project.get("description", ""),
+                "status": project.get("status", ""),
+                "created_at": project.get("created_at", "")
+            })
+    
+    # Search in tasks
+    for task in tasks_db:
+        if (query in task.get("title", "").lower() or 
+            query in task.get("description", "").lower()):
+            results["tasks"].append({
+                "id": task["id"],
+                "title": task["title"],
+                "description": task.get("description", ""),
+                "status": task.get("status", ""),
+                "project_id": task.get("project_id"),
+                "created_at": task.get("created_at", "")
+            })
+    
+    # Search in users
+    for user in users_db.values():
+        if (query in user.get("username", "").lower() or 
+            query in user.get("full_name", "").lower() or
+            query in user.get("email", "").lower()):
+            results["users"].append({
+                "id": user["id"],
+                "username": user["username"],
+                "full_name": user["full_name"],
+                "email": user["email"]
+            })
+    
+    return results
