@@ -25,6 +25,55 @@ app.add_middleware(
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
 ALGORITHM = "HS256"
 
+# File paths for persistence
+DATA_DIR = "/app/data"
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
+PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
+TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
+
+# Create data directory if it doesn't exist
+os.makedirs(DATA_DIR, exist_ok=True)
+
+# Helper functions for file persistence
+def load_data(file_path, default_value):
+    """Load data from JSON file"""
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Error loading {file_path}: {e}")
+    return default_value
+
+def save_data(file_path, data):
+    """Save data to JSON file"""
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2, default=str)
+    except Exception as e:
+        print(f"Error saving {file_path}: {e}")
+
+# Load existing data or initialize with defaults
+users_db = load_data(USERS_FILE, {})
+projects_db = load_data(PROJECTS_FILE, [])
+tasks_db = load_data(TASKS_FILE, [])
+
+# Add a test user if it doesn't exist
+if "test@example.com" not in users_db:
+    test_user = {
+        "id": 1,
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "testpassword",  # In production, hash this
+        "full_name": "Test User",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    users_db["test@example.com"] = test_user
+    save_data(USERS_FILE, users_db)
+
+# Add sample data to databases
+# Note: Sample data removed - users will only see their own projects and tasks
+
 
 # Pydantic models
 class UserRegister(BaseModel):
@@ -37,26 +86,6 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
-
-
-# In-memory storage (replace with database later)
-users_db = {}
-projects_db = []
-tasks_db = []
-
-# Add a test user for immediate testing
-test_user = {
-    "id": 1,
-    "username": "testuser",
-    "email": "test@example.com",
-    "password": "testpassword",  # In production, hash this
-    "full_name": "Test User",
-    "created_at": datetime.now(timezone.utc).isoformat(),
-}
-users_db["test@example.com"] = test_user
-
-# Add sample data to databases
-# Note: Sample data removed - users will only see their own projects and tasks
 
 
 # Helper functions
@@ -105,6 +134,7 @@ async def register(user: UserRegister):
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     users_db[user.email] = user_data
+    save_data(USERS_FILE, users_db)
 
     return {
         "status": "success",
@@ -269,6 +299,7 @@ async def create_project(project_data: dict, request: Request):
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
         projects_db.append(project)
+        save_data(PROJECTS_FILE, projects_db)
         return project
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -305,6 +336,7 @@ async def update_project(project_id: int, project_data: dict, request: Request):
             "description": project_data.get("description", project["description"]),
             "status": project_data.get("status", project["status"]),
         })
+        save_data(PROJECTS_FILE, projects_db)
         
         return project
     except jwt.InvalidTokenError:
@@ -338,11 +370,13 @@ async def delete_project(project_id: int, request: Request):
         
         # Remove the project
         projects_db.remove(project)
+        save_data(PROJECTS_FILE, projects_db)
         
         # Also remove associated tasks
         tasks_to_remove = [t for t in tasks_db if t.get("project_id") == project_id]
         for task in tasks_to_remove:
             tasks_db.remove(task)
+        save_data(TASKS_FILE, tasks_db)
         
         return {"message": "Project deleted successfully"}
     except jwt.InvalidTokenError:
@@ -429,6 +463,7 @@ async def create_task(task_data: dict, request: Request):
             "due_date": task_data.get("due_date"),
         }
         tasks_db.append(task)
+        save_data(TASKS_FILE, tasks_db)
         return task
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -467,6 +502,7 @@ async def update_task(task_id: int, task_data: dict, request: Request):
             "priority": task_data.get("priority", task["priority"]),
             "due_date": task_data.get("due_date", task["due_date"]),
         })
+        save_data(TASKS_FILE, tasks_db)
         
         return task
     except jwt.InvalidTokenError:
@@ -500,6 +536,7 @@ async def delete_task(task_id: int, request: Request):
         
         # Remove the task
         tasks_db.remove(task)
+        save_data(TASKS_FILE, tasks_db)
         
         return {"message": "Task deleted successfully"}
     except jwt.InvalidTokenError:
