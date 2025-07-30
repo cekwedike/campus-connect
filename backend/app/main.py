@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
 ALGORITHM = "HS256"
 
 # File paths for persistence
-DATA_DIR = os.getenv("TEST_DATA_DIR", "/app/data")
+DATA_DIR = os.getenv("TEST_DATA_DIR", "/tmp/data")  # Use /tmp which is always writable
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
 PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
@@ -34,18 +34,31 @@ TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
 # Create data directory if it doesn't exist
 try:
     os.makedirs(DATA_DIR, exist_ok=True)
-except PermissionError:
-    # Fallback to a writable directory in CI environments
+    print(f"✅ Data directory created/verified: {DATA_DIR}")
+except Exception as e:
+    print(f"⚠️ Warning: Could not create data directory {DATA_DIR}: {e}")
+    # Fallback to current working directory
     DATA_DIR = os.path.join(os.getcwd(), "data")
     USERS_FILE = os.path.join(DATA_DIR, "users.json")
     PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
     TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
-    os.makedirs(DATA_DIR, exist_ok=True)
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        print(f"✅ Fallback data directory created: {DATA_DIR}")
+    except Exception as e2:
+        print(f"❌ Critical: Could not create fallback data directory: {e2}")
+        # Use in-memory storage as last resort
+        DATA_DIR = None
+        USERS_FILE = None
+        PROJECTS_FILE = None
+        TASKS_FILE = None
 
 
 # Helper functions for file persistence
 def load_data(file_path, default_value):
     """Load data from JSON file"""
+    if file_path is None:
+        return default_value
     try:
         if os.path.exists(file_path):
             with open(file_path, "r") as f:
@@ -57,6 +70,9 @@ def load_data(file_path, default_value):
 
 def save_data(file_path, data):
     """Save data to JSON file"""
+    if file_path is None:
+        print("⚠️ Warning: File persistence disabled, data not saved")
+        return
     try:
         with open(file_path, "w") as f:
             json.dump(data, f, indent=2, default=str)
@@ -65,12 +81,15 @@ def save_data(file_path, data):
 
 
 # Load existing data or initialize with defaults
+print("🔄 Loading data from files...")
 users_db = load_data(USERS_FILE, {})
 projects_db = load_data(PROJECTS_FILE, [])
 tasks_db = load_data(TASKS_FILE, [])
+print(f"✅ Loaded {len(users_db)} users, {len(projects_db)} projects, {len(tasks_db)} tasks")
 
 # Add a test user if it doesn't exist
 if "test@example.com" not in users_db:
+    print("👤 Creating test user...")
     test_user = {
         "id": 1,
         "username": "testuser",
@@ -81,6 +100,9 @@ if "test@example.com" not in users_db:
     }
     users_db["test@example.com"] = test_user
     save_data(USERS_FILE, users_db)
+    print("✅ Test user created")
+
+print("🚀 Backend startup complete!")
 
 # Add sample data to databases
 # Note: Sample data removed - users will only see their own projects and tasks
