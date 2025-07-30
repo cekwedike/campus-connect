@@ -34,24 +34,27 @@ TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
 
+
 # Helper functions for file persistence
 def load_data(file_path, default_value):
     """Load data from JSON file"""
     try:
         if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 return json.load(f)
     except Exception as e:
         print(f"Error loading {file_path}: {e}")
     return default_value
 
+
 def save_data(file_path, data):
     """Save data to JSON file"""
     try:
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             json.dump(data, f, indent=2, default=str)
     except Exception as e:
         print(f"Error saving {file_path}: {e}")
+
 
 # Load existing data or initialize with defaults
 users_db = load_data(USERS_FILE, {})
@@ -176,17 +179,17 @@ async def get_current_user_info(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
-    
+
     try:
         # Decode the JWT token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
-        
+
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         stored_user = users_db[user_email]
         return {
             "id": stored_user["id"],
@@ -229,16 +232,18 @@ async def get_projects(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        user_projects = [p for p in projects_db if p.get("owner_id") == current_user["id"]]
+        user_projects = [
+            p for p in projects_db if p.get("owner_id") == current_user["id"]
+        ]
         return {"projects": user_projects}
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -250,25 +255,25 @@ async def get_project(project_id: int, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the project
         project = next((p for p in projects_db if p["id"] == project_id), None)
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
-        
+
         # Check if user owns the project
         if project.get("owner_id") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         return project
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -280,16 +285,16 @@ async def create_project(project_data: dict, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         project = {
             "id": len(projects_db) + 1,
             "title": project_data.get("title", "Untitled Project"),
@@ -311,33 +316,35 @@ async def update_project(project_id: int, project_data: dict, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the project
         project = next((p for p in projects_db if p["id"] == project_id), None)
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
-        
+
         # Check if user owns the project
         if project.get("owner_id") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         # Update the project
-        project.update({
-            "title": project_data.get("title", project["title"]),
-            "description": project_data.get("description", project["description"]),
-            "status": project_data.get("status", project["status"]),
-        })
+        project.update(
+            {
+                "title": project_data.get("title", project["title"]),
+                "description": project_data.get("description", project["description"]),
+                "status": project_data.get("status", project["status"]),
+            }
+        )
         save_data(PROJECTS_FILE, projects_db)
-        
+
         return project
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -349,35 +356,35 @@ async def delete_project(project_id: int, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the project
         project = next((p for p in projects_db if p["id"] == project_id), None)
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
-        
+
         # Check if user owns the project
         if project.get("owner_id") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         # Remove the project
         projects_db.remove(project)
         save_data(PROJECTS_FILE, projects_db)
-        
+
         # Also remove associated tasks
         tasks_to_remove = [t for t in tasks_db if t.get("project_id") == project_id]
         for task in tasks_to_remove:
             tasks_db.remove(task)
         save_data(TASKS_FILE, tasks_db)
-        
+
         return {"message": "Project deleted successfully"}
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -390,14 +397,14 @@ async def get_tasks(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
         user_tasks = [t for t in tasks_db if t.get("assigned_to") == current_user["id"]]
         return {"tasks": user_tasks}
@@ -411,25 +418,25 @@ async def get_task(task_id: int, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the task
         task = next((t for t in tasks_db if t["id"] == task_id), None)
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
-        
+
         # Check if user is assigned to the task
         if task.get("assigned_to") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         return task
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -441,16 +448,16 @@ async def create_task(task_data: dict, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         task = {
             "id": len(tasks_db) + 1,
             "title": task_data.get("title", "Untitled Task"),
@@ -475,35 +482,37 @@ async def update_task(task_id: int, task_data: dict, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the task
         task = next((t for t in tasks_db if t["id"] == task_id), None)
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
-        
+
         # Check if user is assigned to the task
         if task.get("assigned_to") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         # Update the task
-        task.update({
-            "title": task_data.get("title", task["title"]),
-            "description": task_data.get("description", task["description"]),
-            "status": task_data.get("status", task["status"]),
-            "priority": task_data.get("priority", task["priority"]),
-            "due_date": task_data.get("due_date", task["due_date"]),
-        })
+        task.update(
+            {
+                "title": task_data.get("title", task["title"]),
+                "description": task_data.get("description", task["description"]),
+                "status": task_data.get("status", task["status"]),
+                "priority": task_data.get("priority", task["priority"]),
+                "due_date": task_data.get("due_date", task["due_date"]),
+            }
+        )
         save_data(TASKS_FILE, tasks_db)
-        
+
         return task
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -515,29 +524,29 @@ async def delete_task(task_id: int, request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get("sub")
         if not user_email or user_email not in users_db:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         current_user = users_db[user_email]
-        
+
         # Find the task
         task = next((t for t in tasks_db if t["id"] == task_id), None)
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
-        
+
         # Check if user is assigned to the task
         if task.get("assigned_to") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Access denied")
-        
+
         # Remove the task
         tasks_db.remove(task)
         save_data(TASKS_FILE, tasks_db)
-        
+
         return {"message": "Task deleted successfully"}
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -562,49 +571,57 @@ async def get_info():
 async def global_search(q: str):
     if not q or len(q.strip()) < 2:
         return {"projects": [], "tasks": [], "users": []}
-    
+
     query = q.lower().strip()
-    results = {
-        "projects": [],
-        "tasks": [],
-        "users": []
-    }
-    
+    results = {"projects": [], "tasks": [], "users": []}
+
     # Search in projects
     for project in projects_db:
-        if (query in project.get("title", "").lower() or 
-            query in project.get("description", "").lower()):
-            results["projects"].append({
-                "id": project["id"],
-                "title": project["title"],
-                "description": project.get("description", ""),
-                "status": project.get("status", ""),
-                "created_at": project.get("created_at", "")
-            })
-    
+        if (
+            query in project.get("title", "").lower()
+            or query in project.get("description", "").lower()
+        ):
+            results["projects"].append(
+                {
+                    "id": project["id"],
+                    "title": project["title"],
+                    "description": project.get("description", ""),
+                    "status": project.get("status", ""),
+                    "created_at": project.get("created_at", ""),
+                }
+            )
+
     # Search in tasks
     for task in tasks_db:
-        if (query in task.get("title", "").lower() or 
-            query in task.get("description", "").lower()):
-            results["tasks"].append({
-                "id": task["id"],
-                "title": task["title"],
-                "description": task.get("description", ""),
-                "status": task.get("status", ""),
-                "project_id": task.get("project_id"),
-                "created_at": task.get("created_at", "")
-            })
-    
+        if (
+            query in task.get("title", "").lower()
+            or query in task.get("description", "").lower()
+        ):
+            results["tasks"].append(
+                {
+                    "id": task["id"],
+                    "title": task["title"],
+                    "description": task.get("description", ""),
+                    "status": task.get("status", ""),
+                    "project_id": task.get("project_id"),
+                    "created_at": task.get("created_at", ""),
+                }
+            )
+
     # Search in users
     for user in users_db.values():
-        if (query in user.get("username", "").lower() or 
-            query in user.get("full_name", "").lower() or
-            query in user.get("email", "").lower()):
-            results["users"].append({
-                "id": user["id"],
-                "username": user["username"],
-                "full_name": user["full_name"],
-                "email": user["email"]
-            })
-    
+        if (
+            query in user.get("username", "").lower()
+            or query in user.get("full_name", "").lower()
+            or query in user.get("email", "").lower()
+        ):
+            results["users"].append(
+                {
+                    "id": user["id"],
+                    "username": user["username"],
+                    "full_name": user["full_name"],
+                    "email": user["email"],
+                }
+            )
+
     return results
