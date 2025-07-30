@@ -7,11 +7,12 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
-# Add permissions for security scanning
+# Add permissions for security scanning and Azure authentication
 permissions:
   security-events: write
   actions: read
   contents: read
+  id-token: write
 
 env:
   REGISTRY: campusconnect2024acr.azurecr.io
@@ -190,9 +191,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Set Azure Subscription
       run: |
@@ -242,9 +241,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Set Azure Subscription
       run: |
@@ -315,9 +312,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
       continue-on-error: true
     
     - name: Check Application Logs
