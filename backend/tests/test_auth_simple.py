@@ -3,6 +3,7 @@ from app.main import app
 import os
 import tempfile
 import shutil
+import uuid
 
 # Create a temporary directory for test data
 test_data_dir = tempfile.mkdtemp()
@@ -15,9 +16,11 @@ client = TestClient(app)
 
 def test_register_user():
     """Test user registration"""
+    # Use unique email to avoid conflicts
+    unique_email = f"newtest{uuid.uuid4().hex[:8]}@example.com"
     user_data = {
         "username": "newtestuser",
-        "email": "newtest@example.com",
+        "email": unique_email,
         "password": "testpassword",
         "full_name": "New Test User"
     }
@@ -32,10 +35,11 @@ def test_register_user():
 
 def test_login_user():
     """Test user login"""
-    # First register a user
+    # Use unique email to avoid conflicts
+    unique_email = f"login{uuid.uuid4().hex[:8]}@example.com"
     user_data = {
         "username": "loginuser",
-        "email": "login@example.com",
+        "email": unique_email,
         "password": "loginpassword",
         "full_name": "Login User"
     }
@@ -45,7 +49,7 @@ def test_login_user():
     
     # Login
     login_data = {
-        "email": "login@example.com",
+        "email": unique_email,
         "password": "loginpassword"
     }
     
@@ -69,9 +73,11 @@ def test_login_invalid_credentials():
 
 def test_register_duplicate_email():
     """Test registration with duplicate email"""
+    # Use unique email to avoid conflicts
+    unique_email = f"duplicate{uuid.uuid4().hex[:8]}@example.com"
     user_data = {
         "username": "duplicateuser",
-        "email": "duplicate@example.com",
+        "email": unique_email,
         "password": "password123",
         "full_name": "Duplicate User"
     }
