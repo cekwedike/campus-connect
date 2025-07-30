@@ -1,15 +1,14 @@
-from fastapi.testclient import TestClient
-from app.main import app
 import os
 import tempfile
 import shutil
 import uuid
 
-# Create a temporary directory for test data
+# Create a temporary directory for test data and set environment variable BEFORE importing app
 test_data_dir = tempfile.mkdtemp()
-
-# Override the data directory for tests
 os.environ['TEST_DATA_DIR'] = test_data_dir
+
+from fastapi.testclient import TestClient
+from app.main import app
 
 client = TestClient(app)
 

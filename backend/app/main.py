@@ -32,7 +32,15 @@ PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
 
 # Create data directory if it doesn't exist
-os.makedirs(DATA_DIR, exist_ok=True)
+try:
+    os.makedirs(DATA_DIR, exist_ok=True)
+except PermissionError:
+    # Fallback to a writable directory in CI environments
+    DATA_DIR = os.path.join(os.getcwd(), "data")
+    USERS_FILE = os.path.join(DATA_DIR, "users.json")
+    PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
+    TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
+    os.makedirs(DATA_DIR, exist_ok=True)
 
 
 # Helper functions for file persistence
