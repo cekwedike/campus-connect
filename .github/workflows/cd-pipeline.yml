@@ -193,9 +193,8 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Set Azure Subscription
+    - name: Verify Azure Login
       run: |
-        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         az account show --query "name" -o tsv
     
     - name: Deploy Backend to Staging
@@ -243,9 +242,8 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Set Azure Subscription
+    - name: Verify Azure Login
       run: |
-        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         az account show --query "name" -o tsv
     
     - name: Deploy Backend to Production
