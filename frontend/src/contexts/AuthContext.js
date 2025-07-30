@@ -21,11 +21,26 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       // Set token in API headers
       authAPI.setToken(token);
-      // For now, we'll set a basic user object
-      // In a real app, you'd verify the token and fetch user data
-      setUser({ token });
+      // Fetch user data from backend to restore session
+      const restoreSession = async () => {
+        try {
+          // Try to get user info from backend
+          const response = await authAPI.getUserInfo();
+          setUser({ ...response.data, token });
+        } catch (error) {
+          console.error('Failed to restore session:', error);
+          // If token is invalid, clear it
+          localStorage.removeItem('token');
+          authAPI.removeToken();
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+      restoreSession();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (username, password) => {

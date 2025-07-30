@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -101,17 +101,11 @@ async def register(user: UserRegister):
         "full_name": user.full_name,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-
     users_db[user.email] = user_data
-
-    # Create access token
-    access_token = create_access_token(data={"sub": user.email})
 
     return {
         "status": "success",
         "message": "User registered successfully",
-        "access_token": access_token,
-        "token_type": "bearer",
         "user": {
             "id": user_data["id"],
             "username": user_data["username"],
@@ -123,14 +117,10 @@ async def register(user: UserRegister):
 
 @app.post("/api/auth/login")
 async def login(user: UserLogin):
-    if user.email not in users_db:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+    stored_user = users_db.get(user.email)
+    if not stored_user or not verify_password(user.password, stored_user["password"]):
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
 
-    stored_user = users_db[user.email]
-    if not verify_password(user.password, stored_user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    # Create access token
     access_token = create_access_token(data={"sub": user.email})
 
     return {
@@ -145,6 +135,36 @@ async def login(user: UserLogin):
             "full_name": stored_user["full_name"],
         },
     }
+
+
+@app.get("/api/auth/me")
+async def get_current_user_info(request: Request):
+    # Get the Authorization header
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    token = auth_header.split(" ")[1]
+    
+    try:
+        # Decode the JWT token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_email = payload.get("sub")
+        
+        if not user_email or user_email not in users_db:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        stored_user = users_db[user_email]
+        return {
+            "id": stored_user["id"],
+            "username": stored_user["username"],
+            "email": stored_user["email"],
+            "full_name": stored_user["full_name"],
+        }
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # User endpoints

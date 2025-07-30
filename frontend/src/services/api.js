@@ -40,6 +40,7 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   register: (userData) => api.post('/auth/register', userData),
+  getUserInfo: () => api.get('/auth/me'),
   setToken: (token) => {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   },
