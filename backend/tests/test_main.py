@@ -1,5 +1,14 @@
 from fastapi.testclient import TestClient
 from app.main import app
+import os
+import tempfile
+import shutil
+
+# Create a temporary directory for test data
+test_data_dir = tempfile.mkdtemp()
+
+# Override the data directory for tests
+os.environ['TEST_DATA_DIR'] = test_data_dir
 
 client = TestClient(app)
 
@@ -39,22 +48,16 @@ def test_openapi_schema():
     assert "openapi" in response.json()
 
 
-def test_get_projects():
-    """Test getting projects"""
+def test_get_projects_unauthorized():
+    """Test getting projects without authentication"""
     response = client.get("/api/projects")
-    assert response.status_code == 200
-    data = response.json()
-    assert "projects" in data
-    assert isinstance(data["projects"], list)
+    assert response.status_code == 401  # Should require authentication
 
 
-def test_get_tasks():
-    """Test getting tasks"""
+def test_get_tasks_unauthorized():
+    """Test getting tasks without authentication"""
     response = client.get("/api/tasks")
-    assert response.status_code == 200
-    data = response.json()
-    assert "tasks" in data
-    assert isinstance(data["tasks"], list)
+    assert response.status_code == 401  # Should require authentication
 
 
 def test_get_users():
@@ -75,3 +78,10 @@ def test_get_info():
     assert "users_count" in data
     assert "projects_count" in data
     assert "tasks_count" in data
+
+
+# Cleanup after tests
+def cleanup():
+    """Clean up test data directory"""
+    if os.path.exists(test_data_dir):
+        shutil.rmtree(test_data_dir)

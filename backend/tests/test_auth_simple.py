@@ -1,5 +1,14 @@
 from fastapi.testclient import TestClient
 from app.main import app
+import os
+import tempfile
+import shutil
+
+# Create a temporary directory for test data
+test_data_dir = tempfile.mkdtemp()
+
+# Override the data directory for tests
+os.environ['TEST_DATA_DIR'] = test_data_dir
 
 client = TestClient(app)
 
@@ -17,8 +26,8 @@ def test_register_user():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "access_token" in data
     assert data["user"]["email"] == user_data["email"]
+    # Note: access_token is not returned in register response anymore
 
 
 def test_login_user():
@@ -87,4 +96,11 @@ def test_login_existing_user():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "success"
-    assert "access_token" in data 
+    assert "access_token" in data
+
+
+# Cleanup after tests
+def cleanup():
+    """Clean up test data directory"""
+    if os.path.exists(test_data_dir):
+        shutil.rmtree(test_data_dir) 

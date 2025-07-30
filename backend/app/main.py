@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
 ALGORITHM = "HS256"
 
 # File paths for persistence
-DATA_DIR = "/app/data"
+DATA_DIR = os.getenv("TEST_DATA_DIR", "/app/data")
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
 PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
