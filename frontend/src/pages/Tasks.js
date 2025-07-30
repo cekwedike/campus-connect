@@ -18,8 +18,9 @@ import {
 } from 'lucide-react';
 
 const Tasks = () => {
-  const { tasks, projects, loading, error, createTask, updateTask, deleteTask } = useData();
+  const { tasks, projects, loading, error, createTask, updateTask, deleteTask, createProject } = useData();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,6 +30,12 @@ const Tasks = () => {
     status: 'todo',
     project_id: '',
     due_date: ''
+  });
+
+  const [newProject, setNewProject] = useState({
+    title: '',
+    description: '',
+    status: 'active'
   });
 
   const handleCreateTask = async (e) => {
@@ -56,6 +63,32 @@ const Tasks = () => {
     } catch (error) {
       console.error('Task creation error:', error);
       toast.error('Failed to create task. Please check all required fields.');
+    }
+  };
+
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    try {
+      const projectData = {
+        title: newProject.title,
+        description: newProject.description,
+        status: newProject.status
+      };
+      
+      const createdProject = await createProject(projectData);
+      toast.success('Project created successfully!');
+      setShowProjectModal(false);
+      setNewProject({
+        title: '',
+        description: '',
+        status: 'active'
+      });
+      
+      // Set the newly created project as selected
+      setNewTask({...newTask, project_id: createdProject.id.toString()});
+    } catch (error) {
+      console.error('Project creation error:', error);
+      toast.error('Failed to create project. Please check all required fields.');
     }
   };
 
@@ -327,17 +360,26 @@ const Tasks = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
-                <select
-                  value={newTask.project_id}
-                  onChange={(e) => setNewTask({...newTask, project_id: e.target.value})}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
-                  required
-                >
-                  <option value="">Select a project</option>
-                  {projects.map(project => (
-                    <option key={project.id} value={project.id}>{project.title}</option>
-                  ))}
-                </select>
+                <div className="flex space-x-2">
+                  <select
+                    value={newTask.project_id}
+                    onChange={(e) => {
+                      if (e.target.value === 'new') {
+                        setShowProjectModal(true);
+                      } else {
+                        setNewTask({...newTask, project_id: e.target.value});
+                      }
+                    }}
+                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
+                    required
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map(project => (
+                      <option key={project.id} value={project.id}>{project.title}</option>
+                    ))}
+                    <option value="new" className="font-semibold text-primary-600">+ Create New Project</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -379,6 +421,69 @@ const Tasks = () => {
                   className="btn-primary"
                 >
                   Create Task
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Project Modal */}
+      {showProjectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-xl p-4 w-full max-w-md my-4 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Create New Project</h2>
+            <form onSubmit={handleCreateProject} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  value={newProject.title}
+                  onChange={(e) => setNewProject({...newProject, title: e.target.value})}
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
+                  placeholder="Enter project title"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
+                  placeholder="Enter project description"
+                  rows="2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={newProject.status}
+                  onChange={(e) => setNewProject({...newProject, status: e.target.value})}
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 shadow-sm"
+                >
+                  <option value="active">Active</option>
+                  <option value="planning">Planning</option>
+                  <option value="completed">Completed</option>
+                  <option value="on_hold">On Hold</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowProjectModal(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                >
+                  Create Project
                 </button>
               </div>
             </form>
