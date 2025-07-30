@@ -22,27 +22,29 @@ Write-Host "Current subscription: $($subscription.name) ($($subscription.id))" -
 # Create service principal
 Write-Host "`n👤 Creating service principal..." -ForegroundColor Yellow
 $spName = "campus-connect-github-actions"
-$sp = az ad sp create-for-rbac --name $spName --role contributor --scopes /subscriptions/$($subscription.id) --sdk-auth | ConvertFrom-Json
+$sp = az ad sp create-for-rbac --name $spName --role contributor --scopes /subscriptions/$($subscription.id) --query "{clientId:appId, clientSecret:password, tenantId:tenant, subscriptionId:subscriptionId}" | ConvertFrom-Json
 
 if ($sp) {
     Write-Host "✅ Service principal created successfully!" -ForegroundColor Green
     
-    # Display the credentials (this should be added to GitHub Secrets)
+    # Display the credentials (these should be added to GitHub Secrets)
     Write-Host "`n🔑 Service Principal Credentials:" -ForegroundColor Yellow
     Write-Host "Add these to your GitHub repository secrets:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "AZURE_CREDENTIALS:" -ForegroundColor Green
-    Write-Host ($sp | ConvertTo-Json -Depth 10) -ForegroundColor White
-    Write-Host ""
-    Write-Host "AZURE_SUBSCRIPTION_ID: $($subscription.id)" -ForegroundColor Green
+    Write-Host "AZURE_CLIENT_ID: $($sp.clientId)" -ForegroundColor Green
+    Write-Host "AZURE_TENANT_ID: $($sp.tenantId)" -ForegroundColor Green
+    Write-Host "AZURE_SUBSCRIPTION_ID: $($sp.subscriptionId)" -ForegroundColor Green
+    Write-Host "AZURE_CLIENT_SECRET: $($sp.clientSecret)" -ForegroundColor Green
     Write-Host ""
     
     Write-Host "📝 Instructions:" -ForegroundColor Yellow
     Write-Host "1. Go to your GitHub repository: https://github.com/cekwedike/campus-connect" -ForegroundColor White
     Write-Host "2. Go to Settings > Secrets and variables > Actions" -ForegroundColor White
     Write-Host "3. Add the following secrets:" -ForegroundColor White
-    Write-Host "   - AZURE_CREDENTIALS: (the JSON output above)" -ForegroundColor White
-    Write-Host "   - AZURE_SUBSCRIPTION_ID: $($subscription.id)" -ForegroundColor White
+    Write-Host "   - AZURE_CLIENT_ID: $($sp.clientId)" -ForegroundColor White
+    Write-Host "   - AZURE_TENANT_ID: $($sp.tenantId)" -ForegroundColor White
+    Write-Host "   - AZURE_SUBSCRIPTION_ID: $($sp.subscriptionId)" -ForegroundColor White
+    Write-Host "   - AZURE_CLIENT_SECRET: $($sp.clientSecret)" -ForegroundColor White
     Write-Host ""
     Write-Host "4. Also ensure you have these secrets for ACR:" -ForegroundColor White
     Write-Host "   - ACR_USERNAME: campusconnect2024acr" -ForegroundColor White
