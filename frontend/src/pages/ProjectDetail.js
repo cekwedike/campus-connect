@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { projectsAPI, tasksAPI, projectMembersAPI } from '../services/api';
+import { projectsAPI, tasksAPI } from '../services/api';
 import { toast } from 'react-hot-toast';
 import { Plus, Edit, Trash2, Users, Calendar, CheckSquare, FileText } from 'lucide-react';
-import FileUpload, { FileList } from '../components/FileUpload';
 
 const ProjectDetail = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [members, setMembers] = useState([]);
-  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -26,22 +23,19 @@ const ProjectDetail = () => {
 
   const fetchProjectData = async () => {
     try {
-      const [projectRes, tasksRes, membersRes, filesRes] = await Promise.all([
-        projectsAPI.getProject(id),
-        tasksAPI.getTasksByProject(id),
-        projectMembersAPI.getProjectMembers(id),
-        fetch(`/api/v1/files/project/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }).then(res => res.json()).catch(() => [])
-      ]);
+      setLoading(true);
       
+      // Get project details
+      const projectRes = await projectsAPI.getProject(id);
       setProject(projectRes.data);
-      setTasks(tasksRes.data);
-      setMembers(membersRes.data);
-      setFiles(filesRes);
+      
+      // Get all tasks for the current user (we'll filter by project_id on frontend)
+      const tasksRes = await tasksAPI.getTasks();
+      const projectTasks = tasksRes.data.tasks.filter(task => task.project_id === parseInt(id));
+      setTasks(projectTasks);
+      
     } catch (error) {
+      console.error('Error fetching project data:', error);
       toast.error('Failed to load project data');
     } finally {
       setLoading(false);
@@ -60,16 +54,9 @@ const ProjectDetail = () => {
       setTaskForm({ title: '', description: '', due_date: '' });
       fetchProjectData();
     } catch (error) {
+      console.error('Error creating task:', error);
       toast.error('Failed to create task');
     }
-  };
-
-  const handleFileUploaded = () => {
-    fetchProjectData();
-  };
-
-  const handleFileDeleted = (fileId) => {
-    setFiles(files.filter(file => file.id !== fileId));
   };
 
   const getStatusColor = (status) => {
@@ -118,9 +105,12 @@ const ProjectDetail = () => {
             </div>
           </div>
           <div className="flex space-x-2">
-            <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-              <Edit className="w-4 h-4" />
-            </button>
+            <Link
+              to="/projects"
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Back to Projects
+            </Link>
           </div>
         </div>
       </div>
@@ -131,9 +121,7 @@ const ProjectDetail = () => {
           <nav className="flex space-x-8 px-6">
             {[
               { id: 'overview', name: 'Overview', icon: '📊' },
-              { id: 'tasks', name: 'Tasks', icon: '✅' },
-              { id: 'members', name: 'Members', icon: '👥' },
-              { id: 'files', name: 'Files', icon: '📁' }
+              { id: 'tasks', name: 'Tasks', icon: '✅' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -166,8 +154,10 @@ const ProjectDetail = () => {
                 </p>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="text-lg font-medium text-purple-900">Team Members</h3>
-                <p className="text-3xl font-bold text-purple-600">{members.length}</p>
+                <h3 className="text-lg font-medium text-purple-900">In Progress</h3>
+                <p className="text-3xl font-bold text-purple-600">
+                  {tasks.filter(task => task.status === 'in_progress').length}
+                </p>
               </div>
             </div>
           )}
@@ -186,72 +176,32 @@ const ProjectDetail = () => {
                 </button>
               </div>
               
-              <div className="grid gap-4">
-                {tasks.map((task) => (
-                  <div key={task.id} className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-gray-900">{task.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+              {tasks.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No tasks yet. Create your first task!</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {tasks.map((task) => (
+                    <div key={task.id} className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium text-gray-900">{task.title}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+                          {task.due_date && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Due: {new Date(task.due_date).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
+                          {task.status}
+                        </span>
                       </div>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
-                        {task.status}
-                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Members Tab */}
-          {activeTab === 'members' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-gray-900">Team Members</h3>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                  <Plus className="w-4 h-4" />
-                  <span>Add Member</span>
-                </button>
-              </div>
-              
-              <div className="grid gap-4">
-                {members.map((member) => (
-                  <div key={member.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium">
-                        {member.user?.full_name?.charAt(0) || member.user?.username?.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {member.user?.full_name || member.user?.username}
-                      </p>
-                      <p className="text-sm text-gray-500">{member.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Files Tab */}
-          {activeTab === 'files' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-gray-900">Project Files</h3>
-              </div>
-              
-              <FileUpload 
-                projectId={id} 
-                onFileUploaded={handleFileUploaded}
-                className="mb-6"
-              />
-              
-              <FileList 
-                files={files} 
-                onFileDeleted={handleFileDeleted}
-              />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
