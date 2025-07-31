@@ -85,7 +85,9 @@ print("🔄 Loading data from files...")
 users_db = load_data(USERS_FILE, {})
 projects_db = load_data(PROJECTS_FILE, [])
 tasks_db = load_data(TASKS_FILE, [])
-print(f"✅ Loaded {len(users_db)} users, {len(projects_db)} projects, {len(tasks_db)} tasks")
+print(
+    f"✅ Loaded {len(users_db)} users, {len(projects_db)} projects, {len(tasks_db)} tasks"
+)
 
 # Add a test user if it doesn't exist
 if "test@example.com" not in users_db:
