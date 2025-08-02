@@ -27,13 +27,14 @@ This document summarizes the optional improvements added to enhance the Phase 3 
   - Enables manual review before production release
 
 ### **3. Semantic Versioning Automation**
-- **File**: `.github/workflows/cd-pipeline.yml`
+- **File**: `.github/workflows/cd-pipeline.yml` and `VERSION`
 - **Feature**: Automatic version bumping and tagging
-- **Action**: `phips28/gh-action-bump-version@master`
+- **Implementation**: Custom bash script with VERSION file
 - **Benefits**:
   - Maintains consistent versioning
   - Automates release tagging
   - Improves release management
+  - Works with any project structure
 
 ### **4. Frontend Security Scanning**
 - **File**: `.github/workflows/cd-pipeline.yml`
@@ -90,7 +91,8 @@ environment: production
 
 # Semantic Versioning
 - name: Bump Version
-  uses: phips28/gh-action-bump-version@master
+  run: |
+    # Custom version bumping script using VERSION file
 
 # Frontend Security
 - name: Run Frontend Security Audit

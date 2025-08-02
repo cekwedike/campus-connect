@@ -362,32 +362,50 @@ jobs:
     
     - name: Update CHANGELOG
       run: |
-        echo "## [$(date +%Y-%m-%d)] - Automated Deployment" >> CHANGELOG.md
+        echo "## [${{ steps.version.outputs.newVersion }}] - $(date +%Y-%m-%d)" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Added" >> CHANGELOG.md
         echo "- Automated deployment from main branch" >> CHANGELOG.md
         echo "- Security scanning integration" >> CHANGELOG.md
         echo "- Monitoring and observability setup" >> CHANGELOG.md
+        echo "- Semantic versioning automation" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
         echo "### Changed" >> CHANGELOG.md
-        echo "- Updated application version" >> CHANGELOG.md
+        echo "- Updated application version to ${{ steps.version.outputs.newVersion }}" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
     
     - name: Bump Version
       id: version
-      uses: phips28/gh-action-bump-version@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag-prefix: 'v'
-        commit-message: 'ci: bump version to ${{ steps.version.outputs.newTag }}'
+      run: |
+        # Read current version from VERSION file
+        CURRENT_VERSION=$(cat VERSION)
+        
+        # Bump patch version
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        NEW_PATCH=$((PATCH + 1))
+        NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+        
+        # Update VERSION file
+        echo "$NEW_VERSION" > VERSION
+        
+        # Create git tag
+        git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
+        git push origin "v$NEW_VERSION"
+        
+        echo "newTag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "newVersion=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        echo "✅ Version bumped from $CURRENT_VERSION to $NEW_VERSION"
     
-    - name: Commit CHANGELOG
+    - name: Commit CHANGELOG and VERSION
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add CHANGELOG.md
-        git commit -m "docs: update CHANGELOG for automated deployment" || echo "No changes to commit"
+        git add CHANGELOG.md VERSION
+        git commit -m "ci: bump version to ${{ steps.version.outputs.newVersion }}" || echo "No changes to commit"
         git push || echo "No changes to push"
 
   # Stage 6: Monitoring & Observability
