@@ -11,7 +11,7 @@ on:
 permissions:
   security-events: write
   actions: read
-  contents: read
+  contents: write
   id-token: write
 
 env:
@@ -319,6 +319,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
     
     - name: Azure Login
       uses: azure/login@v1
@@ -397,7 +400,6 @@ jobs:
         
         # Create git tag
         git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
-        git push origin "v$NEW_VERSION"
         
         echo "newTag=v$NEW_VERSION" >> $GITHUB_OUTPUT
         echo "newVersion=$NEW_VERSION" >> $GITHUB_OUTPUT
@@ -410,7 +412,8 @@ jobs:
         git config --local user.name "GitHub Action"
         git add CHANGELOG.md VERSION
         git commit -m "ci: bump version to ${{ steps.version.outputs.newVersion }}" || echo "No changes to commit"
-        git push || echo "No changes to push"
+        git push origin HEAD:${{ github.ref }} || echo "No changes to push"
+        git push origin "v${{ steps.version.outputs.newVersion }}" || echo "Tag already exists"
 
   # Stage 6: Monitoring & Observability
   monitoring:

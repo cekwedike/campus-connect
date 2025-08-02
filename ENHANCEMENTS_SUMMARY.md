@@ -21,10 +21,12 @@ This document summarizes the optional improvements added to enhance the Phase 3 
 - **File**: `.github/workflows/cd-pipeline.yml`
 - **Feature**: Adds environment protection for production deployments
 - **Configuration**: `environment: production`
+- **Permissions**: `contents: write` for repository modifications
 - **Benefits**:
   - Prevents accidental production deployments
   - Provides audit trail for production changes
   - Enables manual review before production release
+  - Enables automated version bumping and tagging
 
 ### **3. Semantic Versioning Automation**
 - **File**: `.github/workflows/cd-pipeline.yml` and `VERSION`
