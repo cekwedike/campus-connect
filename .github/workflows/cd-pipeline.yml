@@ -34,6 +34,7 @@ jobs:
     
     - name: Validate Conventional Commits
       uses: amannn/action-semantic-pull-request@v5
+      if: github.event_name == 'pull_request'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -50,6 +51,23 @@ jobs:
           perf
           revert
         requireScope: false
+    
+    - name: Validate Commit Message Format
+      if: github.event_name == 'push'
+      run: |
+        echo "Validating commit message format..."
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        
+        # Check if commit message follows conventional commit format
+        if [[ ! "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\([a-z-]+\))?: ]]; then
+          echo "❌ Commit message does not follow conventional commit format"
+          echo "Expected format: <type>(<scope>): <description>"
+          echo "Types: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert"
+          echo "Current message: $COMMIT_MSG"
+          exit 1
+        fi
+        
+        echo "✅ Commit message format is valid"
     
     - name: Set up Python
       uses: actions/setup-python@v4

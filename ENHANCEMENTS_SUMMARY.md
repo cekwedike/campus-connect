@@ -9,11 +9,13 @@ This document summarizes the optional improvements added to enhance the Phase 3 
 ### **1. Conventional Commit Validation**
 - **File**: `.github/workflows/cd-pipeline.yml`
 - **Feature**: Enforces standardized commit message format
-- **Action**: `amannn/action-semantic-pull-request@v5`
+- **Action**: `amannn/action-semantic-pull-request@v5` (for pull requests)
+- **Script**: Custom validation script (for direct pushes)
 - **Benefits**: 
   - Ensures consistent commit history
   - Enables automatic changelog generation
   - Improves code review process
+  - Works for both PR and direct push scenarios
 
 ### **2. Manual Approval for Production**
 - **File**: `.github/workflows/cd-pipeline.yml`
@@ -72,9 +74,16 @@ This document summarizes the optional improvements added to enhance the Phase 3 
 
 ### **Pipeline Enhancements**
 ```yaml
-# Conventional Commit Validation
+# Conventional Commit Validation (Pull Requests)
 - name: Validate Conventional Commits
   uses: amannn/action-semantic-pull-request@v5
+  if: github.event_name == 'pull_request'
+
+# Conventional Commit Validation (Direct Pushes)
+- name: Validate Commit Message Format
+  if: github.event_name == 'push'
+  run: |
+    # Custom validation script for direct pushes
 
 # Manual Approval
 environment: production
