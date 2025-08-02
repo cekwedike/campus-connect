@@ -377,6 +377,10 @@ jobs:
     - name: Bump Version
       id: version
       run: |
+        # Configure git identity
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
         # Read current version from VERSION file
         CURRENT_VERSION=$(cat VERSION)
         
