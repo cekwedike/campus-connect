@@ -29,6 +29,27 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Validate Conventional Commits
+      uses: amannn/action-semantic-pull-request@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        types: |
+          feat
+          fix
+          docs
+          style
+          refactor
+          test
+          chore
+          ci
+          build
+          perf
+          revert
+        requireScope: false
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -72,6 +93,23 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
+    
+    - name: Setup Node.js for Frontend Testing
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run Frontend Tests
+      run: |
+        cd frontend
+        npm test -- --watchAll=false --coverage --passWithNoTests
 
   # Stage 2: Security Scanning
   security:
@@ -104,6 +142,27 @@ jobs:
         if [ ! -f safety-report.json ]; then echo "[]" > safety-report.json; fi
         if [ ! -f bandit-report.json ]; then echo "[]" > bandit-report.json; fi
     
+    - name: Setup Node.js for Frontend Security
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run Frontend Security Audit
+      run: |
+        cd frontend
+        echo "Running npm audit..."
+        npm audit --audit-level=moderate --json > npm-audit-report.json || echo "NPM audit completed with warnings"
+        
+        # Ensure report file exists
+        if [ ! -f npm-audit-report.json ]; then echo "{}" > npm-audit-report.json; fi
+    
     - name: Upload security reports
       uses: actions/upload-artifact@v4
       with:
@@ -111,6 +170,7 @@ jobs:
         path: |
           backend/safety-report.json
           backend/bandit-report.json
+          frontend/npm-audit-report.json
       if: always()
       continue-on-error: true
 
@@ -233,6 +293,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-scan
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
     
     steps:
     - uses: actions/checkout@v4
@@ -289,6 +350,15 @@ jobs:
         echo "### Changed" >> CHANGELOG.md
         echo "- Updated application version" >> CHANGELOG.md
         echo "" >> CHANGELOG.md
+    
+    - name: Bump Version
+      id: version
+      uses: phips28/gh-action-bump-version@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag-prefix: 'v'
+        commit-message: 'ci: bump version to ${{ steps.version.outputs.newTag }}'
     
     - name: Commit CHANGELOG
       run: |

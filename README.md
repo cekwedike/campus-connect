@@ -100,11 +100,13 @@ print('User created successfully')
 
 The application uses a fully automated CI/CD pipeline that:
 
-1. **Automated Testing**: Runs comprehensive tests on every commit
+1. **Automated Testing**: Runs comprehensive tests on every commit (backend + frontend)
 2. **Security Scanning**: Performs dependency and container vulnerability scans
-3. **Staging Deployment**: Automatically deploys to staging on `develop` branch
-4. **Production Deployment**: Automatically deploys to production on `main` branch
-5. **Monitoring**: Provides real-time health checks and logging
+3. **Conventional Commits**: Enforces standardized commit message format
+4. **Staging Deployment**: Automatically deploys to staging on `develop` branch
+5. **Production Deployment**: Deploys to production on `main` branch with manual approval
+6. **Semantic Versioning**: Automatic version bumping and tagging
+7. **Monitoring**: Provides real-time health checks and logging
 
 ### Manual Deployment (Legacy)
 
@@ -163,6 +165,15 @@ az containerapp update --name frontend-app --resource-group $(terraform output -
 ```
 
 ## 🛠️ Development Setup
+
+### Git Configuration
+```bash
+# Configure commit message template
+git config commit.template .gitmessage
+
+# Verify configuration
+git config --list | grep commit.template
+```
 
 ### Frontend Development
 ```bash

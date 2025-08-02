@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Monitoring and observability setup
 - Staging and production environments
 - Automated testing and code quality checks
+- Conventional commit validation and enforcement
+- Manual approval gate for production deployments
+- Semantic versioning automation
+- Frontend security scanning (npm audit)
+- Frontend testing integration
+- Commit message template for standardization
 
 ### Changed
 - Enhanced CI/CD pipeline with multi-stage deployment
