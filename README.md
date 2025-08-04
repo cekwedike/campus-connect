@@ -230,11 +230,8 @@ docker-compose exec backend python -m pytest tests/test_main.py -v
 campus-connect/
 ├── backend/                 # FastAPI backend
 │   ├── app/
-│   │   ├── api/            # API routes
 │   │   ├── core/           # Core configuration
-│   │   ├── models/         # Database models
-│   │   ├── schemas/        # Pydantic schemas
-│   │   └── services/       # Business logic
+│   │   └── main.py         # Main application
 │   ├── tests/              # Backend tests
 │   ├── Dockerfile          # Backend container
 │   └── requirements.txt    # Python dependencies
@@ -248,13 +245,16 @@ campus-connect/
 │   ├── Dockerfile          # Frontend container
 │   └── package.json        # Node dependencies
 ├── terraform/              # Infrastructure as Code
-│   ├── modules/            # Terraform modules
 │   ├── main.tf             # Main configuration
 │   └── variables.tf        # Variable definitions
-├── scripts/                # Deployment scripts
+├── scripts/                # Deployment and utility scripts
+├── monitoring/             # Monitoring configuration
+├── .github/workflows/      # CI/CD pipelines
 ├── docker-compose.yml      # Local development
 ├── docker-compose.prod.yml # Production deployment
-└── README.md              # This file
+├── CHANGELOG.md           # Version history
+├── README.md              # This file
+└── SECURITY.md            # Security documentation
 ```
 
 ## 🔧 Configuration
@@ -333,5 +333,4 @@ The project includes Azure DevOps pipelines for:
 
 ---
 
-**Built with ❤️ for student collaboration** # Pipeline test - 07/29/2025 03:52:04
-# Test commit to trigger pipeline
+**Built with ❤️ for student collaboration**
