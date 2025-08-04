@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>3.0"
+      version = "~>3.80"
     }
   }
 }
@@ -35,7 +35,7 @@ resource "azurerm_subnet" "container_apps" {
   delegation {
     name = "container-apps-delegation"
     service_delegation {
-      name    = "Microsoft.App/containerApps"
+      name    = "Microsoft.App/environments"
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
@@ -93,7 +93,7 @@ resource "azurerm_postgresql_server" "main" {
   administrator_login          = var.db_username
   administrator_login_password = var.db_password
   version                      = "11"
-  ssl_enforcement_enabled      = true
+  ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
 # Database
