@@ -31,7 +31,7 @@ resource "azurerm_subnet" "container_apps" {
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.1.0/24"]
-  
+
   delegation {
     name = "container-apps-delegation"
     service_delegation {
@@ -88,12 +88,12 @@ resource "azurerm_postgresql_server" "main" {
   storage_mb                   = 5120
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
-  auto_grow_enabled           = true
+  auto_grow_enabled            = true
 
   administrator_login          = var.db_username
   administrator_login_password = var.db_password
-  version                     = "11"
-  ssl_enforcement_enabled     = true
+  version                      = "11"
+  ssl_enforcement_enabled      = true
 }
 
 # Database
@@ -140,7 +140,7 @@ resource "azurerm_container_app" "backend" {
 
   ingress {
     external_enabled = true
-    target_port     = 8000
+    target_port      = 8000
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -175,7 +175,7 @@ resource "azurerm_container_app" "frontend" {
 
   ingress {
     external_enabled = true
-    target_port     = 80
+    target_port      = 80
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -218,7 +218,7 @@ resource "azurerm_container_app" "backend_staging" {
 
   ingress {
     external_enabled = true
-    target_port     = 8000
+    target_port      = 8000
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -253,7 +253,7 @@ resource "azurerm_container_app" "frontend_staging" {
 
   ingress {
     external_enabled = true
-    target_port     = 80
+    target_port      = 80
     traffic_weight {
       percentage      = 100
       latest_revision = true
@@ -304,6 +304,6 @@ output "staging_frontend_url" {
 }
 
 output "application_insights_key" {
-  value = azurerm_application_insights.main.instrumentation_key
+  value     = azurerm_application_insights.main.instrumentation_key
   sensitive = true
 } 
