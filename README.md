@@ -96,17 +96,29 @@ print('User created successfully')
 - **Backend**: https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io
 - **API Documentation**: https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/docs
 
+### Infrastructure as Code (Terraform)
+
+The infrastructure is fully automated using Terraform:
+
+1. **Complete Infrastructure**: Virtual networks, Container Apps, databases, monitoring
+2. **Multi-Environment**: Separate staging and production environments
+3. **Automated Deployment**: Infrastructure deploys via GitHub Actions
+4. **Security**: Network isolation, SSL/TLS, secret management
+5. **Monitoring**: Application Insights, Log Analytics, health checks
+6. **Scalability**: Auto-scaling rules and performance optimization
+
 ### Continuous Deployment
 
 The application uses a fully automated CI/CD pipeline that:
 
-1. **Automated Testing**: Runs comprehensive tests on every commit (backend + frontend)
-2. **Security Scanning**: Performs dependency and container vulnerability scans
-3. **Conventional Commits**: Enforces standardized commit message format
-4. **Staging Deployment**: Automatically deploys to staging on `develop` branch
-5. **Production Deployment**: Deploys to production on `main` branch with manual approval
-6. **Semantic Versioning**: Automatic version bumping and tagging
-7. **Monitoring**: Provides real-time health checks and logging
+1. **Infrastructure First**: Terraform deploys infrastructure before applications
+2. **Automated Testing**: Runs comprehensive tests on every commit (backend + frontend)
+3. **Security Scanning**: Performs dependency and container vulnerability scans
+4. **Conventional Commits**: Enforces standardized commit message format
+5. **Staging Deployment**: Automatically deploys to staging on `develop` branch
+6. **Production Deployment**: Deploys to production on `main` branch with manual approval
+7. **Semantic Versioning**: Automatic version bumping and tagging
+8. **Monitoring**: Provides real-time health checks and logging
 
 ### Manual Deployment (Legacy)
 
