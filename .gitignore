@@ -171,4 +171,21 @@ logs/
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
+*.tfvars
+!example.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc 

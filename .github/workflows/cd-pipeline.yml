@@ -1,0 +1,492 @@
+name: Continuous Deployment Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+# Add permissions for security scanning and Azure authentication
+permissions:
+  security-events: write
+  actions: read
+  contents: write
+  id-token: write
+
+env:
+  REGISTRY: campusconnect2024acr.azurecr.io
+  BACKEND_IMAGE: campusconnect-backend
+  FRONTEND_IMAGE: campusconnect-frontend
+  AZURE_RESOURCE_GROUP: campus-connect-rg
+  BACKEND_APP_NAME: campus-connect-backend
+  FRONTEND_APP_NAME: campus-connect-frontend
+
+jobs:
+  # Stage 1: Code Quality & Testing
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Validate Conventional Commits
+      uses: amannn/action-semantic-pull-request@v5
+      if: github.event_name == 'pull_request'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        types: |
+          feat
+          fix
+          docs
+          style
+          refactor
+          test
+          chore
+          ci
+          build
+          perf
+          revert
+        requireScope: false
+    
+    - name: Validate Commit Message Format
+      if: github.event_name == 'push'
+      run: |
+        echo "Validating commit message format..."
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        
+        # Skip validation for merge commits
+        if [[ "$COMMIT_MSG" =~ ^Merge ]]; then
+          echo "✅ Skipping validation for merge commit: $COMMIT_MSG"
+          exit 0
+        fi
+        
+        # Check if commit message follows conventional commit format
+        if [[ ! "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\([a-z-]+\))?: ]]; then
+          echo "❌ Commit message does not follow conventional commit format"
+          echo "Expected format: <type>(<scope>): <description>"
+          echo "Types: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert"
+          echo "Current message: $COMMIT_MSG"
+          exit 1
+        fi
+        
+        echo "✅ Commit message format is valid"
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black pytest pytest-cov pytest-asyncio httpx
+        pip install -r backend/requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        cd backend
+        flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 app/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+    
+    - name: Format check with black
+      run: |
+        cd backend
+        black --check --diff app/
+    
+    - name: Run tests
+      run: |
+        cd backend
+        pytest tests/test_main.py tests/test_auth_simple.py --cov=app --cov-report=xml --cov-report=term-missing -v
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Setup Node.js for Frontend Testing
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+      continue-on-error: true
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        # Try npm ci first, fallback to npm install if cache issues
+        npm ci || npm install
+    
+    - name: Run Frontend Tests
+      run: |
+        cd frontend
+        npm test -- --watchAll=false --coverage --passWithNoTests
+
+  # Stage 2: Security Scanning
+  security:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+    
+    - name: Run security checks
+      run: |
+        cd backend
+        echo "Running dependency vulnerability scan..."
+        safety check --json > safety-report.json || echo "Safety check completed with warnings"
+        
+        echo "Running code security analysis..."
+        bandit -r app/ -f json -o bandit-report.json || echo "Bandit check completed with warnings"
+        
+        # Ensure report files exist
+        if [ ! -f safety-report.json ]; then echo "[]" > safety-report.json; fi
+        if [ ! -f bandit-report.json ]; then echo "[]" > bandit-report.json; fi
+    
+    - name: Setup Node.js for Frontend Security
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+      continue-on-error: true
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        # Try npm ci first, fallback to npm install if cache issues
+        npm ci || npm install
+    
+    - name: Run Frontend Security Audit
+      run: |
+        cd frontend
+        echo "Running npm audit..."
+        npm audit --audit-level=moderate --json > npm-audit-report.json || echo "NPM audit completed with warnings"
+        
+        # Ensure report file exists
+        if [ ! -f npm-audit-report.json ]; then echo "{}" > npm-audit-report.json; fi
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          backend/safety-report.json
+          backend/bandit-report.json
+          frontend/npm-audit-report.json
+      if: always()
+      continue-on-error: true
+
+  # Stage 3: Build & Security Scan Images
+  build-and-scan:
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Login to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}, ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+    
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Stage 4: Deploy to Staging (develop branch)
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-scan
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Verify Azure Login
+      run: |
+        az account show --query "name" -o tsv
+    
+    - name: Deploy Backend to Staging
+      run: |
+        az containerapp update \
+          --name ${{ env.BACKEND_APP_NAME }}-staging \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest \
+          --set-env-vars "ENVIRONMENT=staging" \
+          --set-env-vars "CORS_ORIGINS=https://campus-connect-frontend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io"
+    
+    - name: Deploy Frontend to Staging
+      run: |
+        az containerapp update \
+          --name ${{ env.FRONTEND_APP_NAME }}-staging \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest \
+          --set-env-vars "REACT_APP_API_URL=https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/api" \
+          --set-env-vars "REACT_APP_ENVIRONMENT=staging"
+    
+    - name: Health Check Staging
+      run: |
+        echo "Waiting for staging deployment to stabilize..."
+        sleep 30
+        
+        echo "Checking backend health..."
+        curl -f https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || exit 1
+        
+        echo "Checking frontend health..."
+        curl -f https://campus-connect-frontend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || exit 1
+        
+        echo "✅ Staging deployment successful!"
+
+  # Stage 5: Deploy to Production (main branch)
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: build-and-scan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Verify Azure Login
+      run: |
+        az account show --query "name" -o tsv
+    
+    - name: Deploy Backend to Production
+      run: |
+        az containerapp update \
+          --name ${{ env.BACKEND_APP_NAME }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest \
+          --set-env-vars "ENVIRONMENT=production" \
+          --set-env-vars "CORS_ORIGINS=https://campus-connect-frontend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io"
+    
+    - name: Deploy Frontend to Production
+      run: |
+        az containerapp update \
+          --name ${{ env.FRONTEND_APP_NAME }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest \
+          --set-env-vars "REACT_APP_API_URL=https://campus-connect-backend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/api" \
+          --set-env-vars "REACT_APP_ENVIRONMENT=production"
+    
+    - name: Health Check Production
+      run: |
+        echo "Waiting for production deployment to stabilize..."
+        sleep 30
+        
+        echo "Checking backend health..."
+        curl -f https://campus-connect-backend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || exit 1
+        
+        echo "Checking frontend health..."
+        curl -f https://campus-connect-frontend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || exit 1
+        
+        echo "✅ Production deployment successful!"
+    
+    - name: Update CHANGELOG
+      run: |
+        echo "## [${{ steps.version.outputs.newVersion }}] - $(date +%Y-%m-%d)" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### Added" >> CHANGELOG.md
+        echo "- Automated deployment from main branch" >> CHANGELOG.md
+        echo "- Security scanning integration" >> CHANGELOG.md
+        echo "- Monitoring and observability setup" >> CHANGELOG.md
+        echo "- Semantic versioning automation" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### Changed" >> CHANGELOG.md
+        echo "- Updated application version to ${{ steps.version.outputs.newVersion }}" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+    
+    - name: Bump Version
+      id: version
+      run: |
+        # Configure git identity
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Read current version from VERSION file
+        CURRENT_VERSION=$(cat VERSION)
+        
+        # Bump patch version
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        NEW_PATCH=$((PATCH + 1))
+        NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+        
+        # Update VERSION file
+        echo "$NEW_VERSION" > VERSION
+        
+        # Create git tag
+        git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
+        
+        echo "newTag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "newVersion=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        echo "✅ Version bumped from $CURRENT_VERSION to $NEW_VERSION"
+    
+    - name: Commit CHANGELOG and VERSION
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add CHANGELOG.md VERSION
+        git commit -m "ci: bump version to ${{ steps.version.outputs.newVersion }}" || echo "No changes to commit"
+        git push origin HEAD:${{ github.ref }} || echo "No changes to push"
+        git push origin "v${{ steps.version.outputs.newVersion }}" || echo "Tag already exists"
+
+  # Stage 6: Monitoring & Observability
+  monitoring:
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      continue-on-error: true
+    
+    - name: Check Application Logs
+      run: |
+        echo "📊 Checking application logs..."
+        
+        # Check if Azure login was successful
+        if az account show > /dev/null 2>&1; then
+          # Check backend logs
+          echo "Backend logs (last 10 lines):"
+          az containerapp logs show \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --tail 10 || echo "No logs available"
+          
+          # Check frontend logs
+          echo "Frontend logs (last 10 lines):"
+          az containerapp logs show \
+            --name ${{ env.FRONTEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --tail 10 || echo "No logs available"
+        else
+          echo "⚠️ Azure login failed, skipping log checks"
+        fi
+    
+    - name: Health Check All Environments
+      run: |
+        echo "🏥 Performing health checks..."
+        
+        # Production health check
+        echo "Production Backend:"
+        curl -s -o /dev/null -w "%{http_code}" https://campus-connect-backend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || echo "Failed"
+        
+        echo "Production Frontend:"
+        curl -s -o /dev/null -w "%{http_code}" https://campus-connect-frontend.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || echo "Failed"
+        
+        # Staging health check (if on develop branch)
+        if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+          echo "Staging Backend:"
+          curl -s -o /dev/null -w "%{http_code}" https://campus-connect-backend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || echo "Failed"
+          
+          echo "Staging Frontend:"
+          curl -s -o /dev/null -w "%{http_code}" https://campus-connect-frontend-staging.wonderfulbeach-2ba06ab4.westus2.azurecontainerapps.io/ || echo "Failed"
+        fi
+    
+    - name: Send Notification
+      if: always()
+      run: |
+        echo "🚀 Deployment Summary:" > deployment-summary.txt
+        echo "Branch: ${{ github.ref }}" >> deployment-summary.txt
+        echo "Commit: ${{ github.sha }}" >> deployment-summary.txt
+        echo "Author: ${{ github.actor }}" >> deployment-summary.txt
+        echo "Environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}" >> deployment-summary.txt
+        echo "Status: ${{ job.status }}" >> deployment-summary.txt
+        
+        cat deployment-summary.txt 

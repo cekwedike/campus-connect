@@ -1,0 +1,146 @@
+name: Terraform Infrastructure
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: [ 'terraform/**' ]
+  pull_request:
+    branches: [ main, develop ]
+    paths: [ 'terraform/**' ]
+  workflow_dispatch:
+
+env:
+  TF_VERSION: '1.5.0'
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    name: 'Terraform Plan'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Check Azure CLI
+      run: az --version
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Terraform Format Check
+      working-directory: ./terraform
+      run: terraform fmt -check
+
+    - name: Terraform Validate
+      working-directory: ./terraform
+      run: terraform validate
+
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: |
+        terraform plan \
+          -var="db_password=${{ secrets.DB_PASSWORD }}" \
+          -var="secret_key=${{ secrets.SECRET_KEY }}" \
+          -out=tfplan
+      env:
+        TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+        TF_VAR_secret_key: ${{ secrets.SECRET_KEY }}
+
+    - name: Upload Terraform Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan
+        path: terraform/tfplan
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+    name: 'Terraform Apply'
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Check Azure CLI
+      run: az --version
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Download Terraform Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: terraform-plan
+        path: terraform/
+
+    - name: Terraform Apply
+      working-directory: ./terraform
+      run: terraform apply -auto-approve tfplan
+      env:
+        TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+        TF_VAR_secret_key: ${{ secrets.SECRET_KEY }}
+
+    - name: Get Terraform Outputs
+      working-directory: ./terraform
+      run: |
+        echo "## Infrastructure URLs" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Production Environment" >> $GITHUB_STEP_SUMMARY
+        echo "- Backend: $(terraform output -raw production_backend_url)" >> $GITHUB_STEP_SUMMARY
+        echo "- Frontend: $(terraform output -raw production_frontend_url)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Staging Environment" >> $GITHUB_STEP_SUMMARY
+        echo "- Backend: $(terraform output -raw staging_backend_url)" >> $GITHUB_STEP_SUMMARY
+        echo "- Frontend: $(terraform output -raw staging_frontend_url)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Infrastructure Details" >> $GITHUB_STEP_SUMMARY
+        echo "- Resource Group: $(terraform output -raw resource_group_name)" >> $GITHUB_STEP_SUMMARY
+        echo "- Container Registry: $(terraform output -raw acr_login_server)" >> $GITHUB_STEP_SUMMARY
+        echo "- Database Server: $(terraform output -raw database_server_name)" >> $GITHUB_STEP_SUMMARY
+
+    - name: Health Check Infrastructure
+      run: |
+        echo "🏥 Performing infrastructure health checks..."
+        
+        # Wait for resources to be ready
+        sleep 60
+        
+        # Check production backend
+        echo "Production Backend:"
+        curl -s -o /dev/null -w "%{http_code}" $(cd terraform && terraform output -raw production_backend_url) || echo "Failed"
+        
+        # Check production frontend
+        echo "Production Frontend:"
+        curl -s -o /dev/null -w "%{http_code}" $(cd terraform && terraform output -raw production_frontend_url) || echo "Failed"
+        
+        # Check staging backend
+        echo "Staging Backend:"
+        curl -s -o /dev/null -w "%{http_code}" $(cd terraform && terraform output -raw staging_backend_url) || echo "Failed"
+        
+        # Check staging frontend
+        echo "Staging Frontend:"
+        curl -s -o /dev/null -w "%{http_code}" $(cd terraform && terraform output -raw staging_frontend_url) || echo "Failed" 

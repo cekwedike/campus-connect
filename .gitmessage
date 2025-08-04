@@ -1,0 +1,39 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Types:
+#   feat     (new feature for the user, not a new feature for build script)
+#   fix      (bug fix for the user, not a fix to a build script)
+#   docs     (changes to the documentation)
+#   style    (formatting, missing semi colons, etc; no production code change)
+#   refactor (refactoring production code, eg. renaming a variable)
+#   test     (adding missing tests, refactoring tests; no production code change)
+#   chore    (updating grunt tasks etc; no production code change)
+#   ci       (changes to CI configuration files and scripts)
+#   build    (changes that affect the build system or external dependencies)
+#   perf     (a code change that improves performance)
+#   revert   (revert to a previous commit)
+
+# Scopes:
+#   api      (API related changes)
+#   auth     (authentication related changes)
+#   ui       (user interface changes)
+#   db       (database related changes)
+#   deploy   (deployment related changes)
+#   security (security related changes)
+
+# Examples:
+#   feat(auth): add JWT token authentication
+#   fix(api): resolve user registration endpoint
+#   docs: update API documentation
+#   style: format code with black
+#   refactor(db): improve database connection handling
+#   test: add unit tests for user service
+#   chore: update dependencies
+#   ci: add GitHub Actions workflow
+#   build: update Docker configuration
+#   perf: optimize database queries
+#   revert: revert to previous authentication method 

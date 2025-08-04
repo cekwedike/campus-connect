@@ -3,54 +3,81 @@ version: '3.8'
 services:
   # PostgreSQL Database
   db:
-    image: postgres:13
+    image: postgres:13-alpine
     environment:
-      POSTGRES_DB: campusconnect
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-campusconnect}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - campus-connect-network
 
   # FastAPI Backend
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/campusconnect
-      SECRET_KEY: your-secret-key-here
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-campusconnect}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here-change-in-production}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:80}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./backend:/app
+      - backend_logs:/app/logs
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - campus-connect-network
 
-  # React Frontend (placeholder for future)
+  # React Frontend
   frontend:
-    image: node:16-alpine
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-    working_dir: /app
-    command: sh -c "npm install && npm start"
+      - "${FRONTEND_PORT:-3000}:80"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://localhost:8000
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8000}
+      REACT_APP_ENVIRONMENT: ${REACT_APP_ENVIRONMENT:-development}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - campus-connect-network
 
 volumes:
-  postgres_data: 
+  postgres_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+networks:
+  campus-connect-network:
+    driver: bridge 
