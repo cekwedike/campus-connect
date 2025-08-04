@@ -6,7 +6,7 @@ environment = "production"
 db_name     = "campusconnect"
 db_username = "postgres"
 db_password = "YourStrongPassword123!" # Change this to a strong password
-db_sku_name = "B_Standard_B1ms"
+db_sku_name = "B_Gen5_1"
 
 # Application Configuration
 secret_key = "1234567890ekwedike" # Change this to a strong secret key
