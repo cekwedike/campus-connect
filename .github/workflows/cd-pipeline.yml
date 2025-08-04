@@ -58,6 +58,12 @@ jobs:
         echo "Validating commit message format..."
         COMMIT_MSG="${{ github.event.head_commit.message }}"
         
+        # Skip validation for merge commits
+        if [[ "$COMMIT_MSG" =~ ^Merge ]]; then
+          echo "✅ Skipping validation for merge commit: $COMMIT_MSG"
+          exit 0
+        fi
+        
         # Check if commit message follows conventional commit format
         if [[ ! "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\([a-z-]+\))?: ]]; then
           echo "❌ Commit message does not follow conventional commit format"
