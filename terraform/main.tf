@@ -90,9 +90,9 @@ resource "azurerm_postgresql_server" "main" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled            = true
 
-  administrator_login          = var.db_username
-  administrator_login_password = var.db_password
-  version                      = "11"
+  administrator_login              = var.db_username
+  administrator_login_password     = var.db_password
+  version                          = "11"
   ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
