@@ -323,6 +323,19 @@ For support and questions:
 - Check the API documentation at `/docs`
 - Review the test files for usage examples
 
+## 🎥 Video Demonstration
+
+### Phase 3 Assessment Video
+**Video Link**: [CampusConnect Phase 3 Continuous Deployment Demonstration](https://drive.google.com/file/d/13_TDL29Fhw6c2Fuxe-IJDidCk7LNaVL3/view?usp=drive_link)
+
+This video demonstrates the complete Continuous Deployment pipeline implementation including:
+- Live production application demonstration
+- Code modification and conventional commit
+- Automated staging deployment
+- Production deployment with manual approval
+- Monitoring and observability features
+- Complete CI/CD pipeline execution
+
 ## 🔄 CI/CD
 
 The project includes Azure DevOps pipelines for:
